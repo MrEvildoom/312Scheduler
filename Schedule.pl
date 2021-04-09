@@ -2,6 +2,7 @@
 % Task Scheduler
 % Brendan Woodward, David Liu, Jack Heidal
 :- use_module(library(csv)).
+:- dynamic task/1, due/3, duration/2, prequisite/2, available/2, event/1, start/2, end/2, planstart/1, planend/1.
 
 % loads files from user given location
 load :-
@@ -26,6 +27,36 @@ load :-
     createEvents(Events, EFacts),
     assertFacts(EFacts),
     write('Success!\n'), flush_output(current_output).
+
+% loads files without the user neeeding to input location
+auto_load :-
+    retractFacts,
+    csv_read_file('Schedule - tasks.csv', Tasks, [functor(task), arity(5), skip_header('Task Name')]),
+    csv_read_file('Schedule - profile.csv', Profile, [functor(avail), arity(3), skip_header('Date (MM/DD/YYYY)')]),
+    readTop2('Schedule - profile.csv', StartD, EndD),
+    csv_read_file('Schedule - busy.csv', Events, [functor(event), arity(4), skip_header('Busy Event')]),
+    write('Loading Tasks, Profile, and Events...\n'), flush_output(current_output),
+    createTasks(Tasks, TFacts),
+    assertFacts(TFacts),
+    createProfile(Profile, PFacts),
+    assertFacts(PFacts),
+    createStartEnd(StartD, EndD, PLFacts),
+    assertFacts(PLFacts),
+    createEvents(Events, EFacts),
+    assertFacts(EFacts),
+    write('Success!\n'), flush_output(current_output).
+
+% createTasks iterates through the tasks and formats them into proper facts ie. due('Quiz', date(04, 10, 2021), am(11, 30))
+createTasks([],[]).
+createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PRFact|Facts]) :-
+    NFact =.. ['task', Name],
+    convertDate(Date, NewDate),
+    convertTime(Time, NewTime),
+    DTFact =.. ['due', Name, NewDate, NewTime],
+    term_to_atom(NewDur, Dur),
+    DRFact =.. ['duration', Name, NewDur],
+    PRFact =.. ['prequisite', Name, Pre],
+    createTasks(Tasks, Facts).
 
 % createProfile iterates through the profile and foramts them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
 createProfile([],[]).
@@ -69,17 +100,7 @@ createStartEnd(row(_,'Start', SDate), row(_, 'End', EDate), [StartF, EndF]) :-
     StartF =.. ['planstart', SDate],
     EndF =.. ['planend', EDate].
 
-% createTasks iterates through the tasks and formats them into proper facts ie. due('Quiz', date(04, 10, 2021), am(11, 30))
-createTasks([],[]).
-createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PRFact|Facts]) :-
-    NFact =.. ['task', Name],
-    convertDate(Date, NewDate),
-    convertTime(Time, NewTime),
-    DTFact =.. ['due', Name, NewDate, NewTime],
-    term_to_atom(NewDur, Dur),
-    DRFact =.. ['duration', Name, NewDur],
-    PRFact =.. ['prequisite', Name, Pre],
-    createTasks(Tasks, Facts).
+
 
 % retractFacts clears the KB of all relevant facts that are to be loaded in
 retractFacts :-
