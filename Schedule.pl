@@ -53,7 +53,7 @@ convertTimeRange([TimeR|Times], [range(StartTime, EndTime)|ListRange]) :-
     convertTime(ET, EndTime),
     convertTimeRange(Times, ListRange).
 
-% createEvents iterates through the events and formats them into propper facts ie. start('Practice', date(15, 04, 2021), pm(4, 45))
+% createEvents iterates through the events and formats them into propper facts ie. start('Practice', date(04, 12, 2021), pm(4, 45))
 createEvents([],[]).
 createEvents([event(Name, Date, Start, End)|Events], [NFact, SFact, EFact|Facts]) :-
     NFact =.. ['event', Name],
@@ -69,7 +69,7 @@ createStartEnd(row(_,'Start', SDate), row(_, 'End', EDate), [StartF, EndF]) :-
     StartF =.. ['planstart', SDate],
     EndF =.. ['planend', EDate].
 
-% createTasks iterates through the tasks and formats them into proper facts ie. due('Quiz', date(12, 04, 2021), am(11, 30))
+% createTasks iterates through the tasks and formats them into proper facts ie. due('Quiz', date(04, 10, 2021), am(11, 30))
 createTasks([],[]).
 createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PRFact|Facts]) :-
     NFact =.. ['task', Name],
