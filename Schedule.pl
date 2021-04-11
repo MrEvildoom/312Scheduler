@@ -100,8 +100,6 @@ createStartEnd(row(_,'Start', SDate), row(_, 'End', EDate), [StartF, EndF]) :-
     StartF =.. ['planstart', SDate],
     EndF =.. ['planend', EDate].
 
-
-
 % retractFacts clears the KB of all relevant facts that are to be loaded in
 retractFacts :-
     retractall(task(_,_,_,_,_)),
@@ -147,3 +145,41 @@ readTop2(File, Row1, Row2) :-
     Num is 1,
     csv_read_file_row(File, Row2, [line(Num2)]),
     Num2 is Num + 1.
+
+% beforeTime(T1, T2) is true if time 1 (is a time) and is less than time 2 (which is also a time)
+beforeTime(am(_,_), pm(_,_)).
+
+beforeTime(am(12,_), am(H2,_)) :- H2 < 12.
+beforeTime(am(H1,_), am(H2,_)) :- (H1<H2), (H2 < 12).
+beforeTime(am(H1,M1), am(H1,M2)) :- (M1<M2).
+
+beforeTime(pm(12,_), pm(H2,_)) :- H2 < 12.
+beforeTime(pm(H1,_), pm(H2,_)) :- (H1<H2), (H2 < 12).
+beforeTime(pm(H1,M1), pm(H1,M2)) :- (M1<M2).
+
+% beforeDate(D1, D2) is true when date D1 is before date D2
+beforeDate(date(_,_,Y0), date(_,_,Y1)) :-
+    Y0 < Y1.
+beforeDate(date(_,M0,Y), date(_,M1,Y)) :-
+    M0 < M1.
+beforeDate(date(D0,M,Y), date(D1,M,Y)) :-
+    D0 < D1.
+
+% lengthT(range(Start, End), Length) is true if L is the length in minutes of time between start and end
+lengthT(range(am(H,M1), am(H, M2)), L) :- L is M2 - M1.
+lengthT(range(pm(H,M1), pm(H, M2)), L) :- L is M2 - M1.
+lengthT(range(am(H1, M1), pm(H2, M2)), L) :-
+    H1 < 12, H2 < 12,
+    L is ((12-H1) + H2)*60 + M2 - M1.
+lengthT(range(am(12, M1), pm(H2, M2)), L) :-
+    H2 < 12,
+    L is (12 + H2)*60 + M2 - M1.
+lengthT(range(am(H1, M1), pm(12, M2)), L) :-
+    H1 < 12,
+    L is (12 - H1)*60 + M2 - M1.
+lengthT(range(am(12, M1), pm(12, M2)), L) :-
+    L is 12*60 + M2 - M1.
+
+lengthTHours(Range, L) :-
+    lengthT(Range, LM),
+    L is LM / 60.
