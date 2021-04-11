@@ -18,13 +18,6 @@ schedule_list([H_avail|T_avail], [H_task|T_task], [H_scheduled|T_scheduled]) :-
 
 schedule_task(available(Date, Range), Task, scheduledTask(Task, Date, Range)).
 
-% schedule_list(AvailableTimes, [UnschH|UnschT], SchList) :-
-%     % If the task has a prerequisite, find that prerequisite and pull it to the front of the list
-%     prequisite(UnschH, HPrereq),
-%     HPrereq \= '',
-%     remove_from_list(HPrereq, UnschT, FixedList),
-%     schedule_list(AvailableTimes, [HPrereq, UnschH|FixedList], SchList).
-
 % Helper Relations
 
 % Insertion Sort taken from http://kti.ms.mff.cuni.cz/~bartak/prolog/sorting.html
