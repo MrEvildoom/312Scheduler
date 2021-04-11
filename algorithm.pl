@@ -73,14 +73,13 @@ createSlotsWrapper :-
     maplist(assert, Slots).
 
 createSlots([],[]).
-createSlots([available(Date, Range)|Availables], [SlotsA|Slots]) :-
-  	splitTime(Date, Range, SlotsA),
-	createSlots(Availables, Slots).
+createSlots([available(Date, Range)|Availables], AllSlots) :-
+  splitTime(Date, Range, SlotsA),
+    createSlots(Availables, Slots),
+    append(SlotsA, Slots, AllSlots).
 
 splitTime(_, range(End, End), []).
-splitTime(_, range(Start, End), []) :- beforeTime(End, Start).
+%splitTime(_, range(Start, End), []) :- beforeTime(End, Start).
 splitTime(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
-		timeAfter15(Start, E15),
-		splitTime(Date, range(E15, End), Slots).
-
-
+    timeAfter15(Start, E15),
+    splitTime(Date, range(E15, End), Slots).
