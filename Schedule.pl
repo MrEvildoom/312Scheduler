@@ -31,10 +31,10 @@ load :-
 % loads files without the user neeeding to input location
 auto_load :-
     retractFacts,
-    csv_read_file('Schedule - tasks.csv', Tasks, [functor(task), arity(5), skip_header('Task Name')]),
-    csv_read_file('Schedule - profile.csv', Profile, [functor(avail), arity(3), skip_header('Date (MM/DD/YYYY)')]),
-    readTop2('Schedule - profile.csv', StartD, EndD),
-    csv_read_file('Schedule - busy.csv', Events, [functor(event), arity(4), skip_header('Busy Event')]),
+    csv_read_file('tasks.csv', Tasks, [functor(task), arity(5), skip_header('Task Name')]),
+    csv_read_file('profile.csv', Profile, [functor(avail), arity(3), skip_header('Date (MM/DD/YYYY)')]),
+    readTop2('profile.csv', StartD, EndD),
+    csv_read_file('busy.csv', Events, [functor(event), arity(4), skip_header('Busy Event')]),
     write('Loading Tasks, Profile, and Events...\n'), flush_output(current_output),
     createTasks(Tasks, TFacts),
     assertFacts(TFacts),
