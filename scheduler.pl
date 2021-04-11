@@ -55,4 +55,5 @@ slot(Date, range(Start, End)) :-
 
 slot_available(slot_available(slot(Date, range(Start, End))) :-
     available(Date, range(A_Start, A_End)),
-    beforeTime()
+    beforeTime(A_Start, Start),
+    beforeTime(End, A_End).
