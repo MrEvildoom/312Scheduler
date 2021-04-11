@@ -1,11 +1,12 @@
 :- include('Schedule.pl').
 :- dynamic slot/2.
 
-schedule_list_wrapper(ScheduledList) :-
+schedule_list_wrapper(Block_List) :-
     findall(X, task(X), Tasks),
     subdivide_tasks(Tasks, Block_List),
-    assigned_slots(Block_List, Scheduled_List),
-    prereq_satisfied_wrapper(ScheduledList).
+    createSlotsWrapper.
+    % assigned_slots(Block_List, Scheduled_List),
+    % prereq_satisfied_wrapper(Scheduled_List).
 
 % divides tasks into blocks of one hour
 subdivide_tasks([],[]).
@@ -16,13 +17,16 @@ subdivide_tasks([H|T], Result) :-
     append(H_Blocks, T_Blocks, Result).
 
 replicate(_,0,[]).
-replicate(Elem, Iter, [Elem|T]) :- replicate(Elem, Iter-1, T).
+replicate(Elem, Iter, [Elem|T]) :-
+    Iter \= 0,
+    NewIter is Iter-1,
+    replicate(Elem, NewIter, T).
 
 assigned_slots([],[]).
 assigned_slots([H|T], [assigned(H,slot(D,R))|T_Assigned]) :-
     slot(D,R),
     beforeDue(H, D, R),
-    assigned_slots(T, T_Assigned).
+    assigned_slots(T, T_Assigned),
     non_member(assigned(_,slot(D,R)), T_Assigned).
 
 % before_due is true if Date and End are before Task's due date
@@ -45,7 +49,8 @@ prereq_satisfied([assigned(H,slot(D,range(S,_)))|T],List) :-
 % prereq_iter(Date, Start, Prereq, List) is true if all prereqs in list end before Date, Start. 
 prereq_iter(D1, Start, Prereq, [assigned(Prereq,slot(D2, range(_,End))) | T]) :-
     % if Head of the list is a prereq
-    (D1 = D2 -> beforeTime(End, Start) ; beforeDate(D2, D1)).
+    (D1 = D2 -> beforeTime(End, Start) ; beforeDate(D2, D1)),
+    prereq_iter(D1, Start, Prereq, T).
 prereq_iter(D1, Start, Prereq, [assigned(H,_)|T]) :-
     Prereq \= H,
     prereq_iter(D1, Start, Prereq, T).

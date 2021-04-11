@@ -183,3 +183,28 @@ lengthT(range(am(12, M1), pm(12, M2)), L) :-
 lengthTHours(Range, L) :-
     lengthT(Range, LM),
     L is LM / 60.
+
+% returns the time of the given time 15 minutes after.
+timeAfter15(am(H, M1), am(H, M2)) :-
+		M1 < 45,
+		M2 is M1 + 15.
+timeAfter15(pm(H, M1), pm(H, M2)) :-
+		M1 < 45,
+		M2 is M1 + 15.
+timeAfter15(am(H1, M1), am(H2, M2)) :-
+		H1 < 11, M1 > 44,
+		H2 is H1 + 1,
+		M2 is M1 - 45.
+timeAfter15(pm(H1, M1), pm(H2, M2)) :-
+		H1 < 11, M1 > 44,
+		H2 is H1 + 1,
+		M2 is M1 - 45.
+timeAfter15(am(12, M1), am(1, M2)) :-
+		M1 > 44,
+		M2 is M1 - 45.
+timeAfter15(pm(12, M1), pm(1, M2)) :-
+		M1 > 44,
+		M2 is M1 - 45.
+timeAfter15(am(11, M1), pm(12, M2)) :-
+		M1 > 44,
+		M2 is M1 - 45.
