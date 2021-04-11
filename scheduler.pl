@@ -1,19 +1,17 @@
-:- include('Schedule.pl', 'transformation.pl').
-:- dynamic slot/3.
-
-
+:- include('Schedule.pl').
+:- dynamic slot/2.
 
 schedule_list_wrapper(ScheduledList) :-
     findall(X, task(X), Tasks),
     subdivide_tasks(Tasks, Block_List),
-    assigned_slots(Block_List, Scheduled_List).
-    % prerequisites_satisfied(Block_List, ScheduledList).
+    assigned_slots(Block_List, Scheduled_List),
+    prereq_satisfied_wrapper(ScheduledList).
 
 % divides tasks into blocks of one hour
 subdivide_tasks([],[]).
 subdivide_tasks([H|T], Result) :-
     duration(H, D),
-    replicate(H, D, H_Blocks),
+    replicate(H, D*4, H_Blocks),
     subdivide_tasks(T, T_Blocks),
     append(H_Blocks, T_Blocks, Result).
 
@@ -21,39 +19,62 @@ replicate(_,0,[]).
 replicate(Elem, Iter, [Elem|T]) :- replicate(Elem, Iter-1, T).
 
 assigned_slots([],[]).
-assigned_slots([H|T], [assigned(H,slot(D,S,E))|T_Assigned]) :-
-    slot(D,range(S,E)),
+assigned_slots([H|T], [assigned(H,slot(D,R))|T_Assigned]) :-
+    slot(D,R),
+    beforeDue(H, D, R),
     assigned_slots(T, T_Assigned).
+    non_member(assigned(_,slot(D,R)), T_Assigned).
 
-
-scheduled_list([], _).
-scheduled_list([H_task|T_task], Scheduled_tasks_list) :-
-    member(scheduledTask(Task, available(_,range(_,_))), Scheduled_tasks_list),
-    scheduled_list(T_task, Scheduled_tasks_list).
+% before_due is true if Date and End are before Task's due date
+beforeDue(Task, Date, range(_,Time)) :-
+    due(Task, Due_date, Due_time),
+    (Date = Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
 % checks that prerequisites are satisfied
-prerequisites_satisfied([],_).
-prerequisites_satisfied([H_task|T_task], Scheduled_tasks_list) :-
-    prequisite(H_task, ''),
-    prerequisites_satisfied(T_task, Scheduled_tasks_list).
-prerequisites_satisfied([H_task|T_task], Scheduled_tasks_list) :-
-    prequisite(H_task, H_t_p),
-    member(scheduledTask(H_task, available(H_task_date,H_task_time)), Scheduled_tasks_list),
-    member(scheduledTask(H_t_p, available(H_t_p_date,H_t_p_time)), Scheduled_tasks_list),
-    before_range(H_task_date, H_task_time, H_t_p_date, H_t_p_time),
-    prerequisites_satisfied(T_task, Scheduled_tasks_list).
+prereq_satisfied_wrapper(X) :- prereq_satisfied(X, X).
+
+prereq_satisfied([],_).
+prereq_satisfied([assigned(H,_)|T],List) :-
+    prequisite(H,''), prereq_satisfied(T,List).
+prereq_satisfied([assigned(H,slot(D,range(S,_)))|T],List) :- 
+    prequisite(H, H_prereq),
+    H_prereq \= '',
+    prereq_iter(D,S,H_prereq, List),
+    prereq_satisfied(T,List).
+
+% prereq_iter(Date, Start, Prereq, List) is true if all prereqs in list end before Date, Start. 
+prereq_iter(D1, Start, Prereq, [assigned(Prereq,slot(D2, range(_,End))) | T]) :-
+    % if Head of the list is a prereq
+    (D1 = D2 -> beforeTime(End, Start) ; beforeDate(D2, D1)).
+prereq_iter(D1, Start, Prereq, [assigned(H,_)|T]) :-
+    Prereq \= H,
+    prereq_iter(D1, Start, Prereq, T).
 
 % Helper functions
 
 before_range(Date1,_,Date2,_) :- beforeDate(Date1, Date2).
 before_range(Date, range(_,End1), Date, range(Start2,_)) :- beforeTime(End1,Start2).
 
-% a slot is valid if it is during available time and at least one hour
-slot(Date, range(Start, End)) :-
-    slot_available(slot(Date, range(Start, End))),
-    time_length(range(Start, End), 60).
+non_member(_,[]).
+non_member(Elem, [H|T]) :-
+    Elem \== H,
+    non_member(Elem, T).
 
-slot_available(slot_available(slot(Date, range(Start, End))) :-
-    available(Date, range(A_Start, A_End)),
-    beforeTime(A_Start, Start),
-    beforeTime(End, A_End).
+createSlotsWrapper :-
+		retractall(slot(_,_)),
+		findall(available(X, Y), available(X, Y), Availables),
+		createSlots(Availables, Slots),
+		maplist(assert, Slots).
+
+createSlots([],[]).
+createSlots([available(Date, Range)|Availables], [SlotsA|Slots]) :-
+  	splitTime(Date, Range, SlotsA),
+	createSlots(Availables, Slots).
+
+splitTime(_, range(End, End), []).
+splitTime(_, range(Start, End), []) :- beforeTime(End, Start).
+splitTime(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
+		timeAfter15(Start, E15),
+		splitTime(Date, range(E15, End), Slots).
+
+

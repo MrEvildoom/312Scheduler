@@ -102,10 +102,11 @@ createStartEnd(row(_,'Start', SDate), row(_, 'End', EDate), [StartF, EndF]) :-
 
 % retractFacts clears the KB of all relevant facts that are to be loaded in
 retractFacts :-
-    retractall(task(_,_,_,_,_)),
-    retractall(day(_,_)),
-    retractall(event(_,_,_,_)).
+    retractall(task(_)), retractall(due(_,_,_)), retractall(duration(_,_)), retractall(prequisite(_,_)),
+    retractall(available(_,_)), retractall(planstart(_)), retractall(planend(_)),
+    retractall(event(_)), retractall(start(_,_)), retractall(end(_,_)).
     
+
 % assertFacts iterates through a list of facts and asserts them
 assertFacts([]).
 assertFacts([H|T]) :-
@@ -183,3 +184,53 @@ lengthT(range(am(12, M1), pm(12, M2)), L) :-
 lengthTHours(Range, L) :-
     lengthT(Range, LM),
     L is LM / 60.
+
+% returns the time of the given time 15 minutes after.
+timeAfter15(am(H, M1), am(H, M2)) :-
+		M1 < 45,
+		M2 is M1 + 15.
+timeAfter15(pm(H, M1), pm(H, M2)) :-
+		M1 < 45,
+		M2 is M1 + 15.
+timeAfter15(am(H1, M1), am(H2, M2)) :-
+		H1 < 11, M1 > 44,
+		H2 is H1 + 1,
+		M2 is M1 - 45.
+timeAfter15(pm(H1, M1), pm(H2, M2)) :-
+		H1 < 11, M1 > 44,
+		H2 is H1 + 1,
+		M2 is M1 - 45.
+timeAfter15(am(12, M1), am(1, M2)) :-
+		M1 > 44,
+		M2 is M1 - 45.
+timeAfter15(pm(12, M1), pm(1, M2)) :-
+		M1 > 44,
+		M2 is M1 - 45.
+timeAfter15(am(11, M1), pm(12, M2)) :-
+		M1 > 44,
+		M2 is M1 - 45.
+
+% gives the next day of the month
+nextDay(date(M1,D1,Y), date(M2,1,Y)) :-
+	  monthend(M1, D1),
+    M2 is M1 + 1.
+nextDay(date(M,D1,Y), date(M,D2,Y)) :-
+		\+ monthend(M,D1),
+		D2 is D1 + 1.
+nextDay(date(12,31,Y1), date(1,1,Y2)) :-
+		Y2 is Y1 + 1.
+
+% monthend(M, D) is true if day d is the last day of month M
+monthend(1, 31).
+monthend(2, 28).
+monthend(3, 31).
+monthend(4, 30).
+monthend(5, 31).
+monthend(6, 30).
+monthend(7, 31).
+monthend(8, 31).
+monthend(9, 30).
+monthend(10, 31).
+monthend(11, 30).
+% monthend(12, 31).
+
