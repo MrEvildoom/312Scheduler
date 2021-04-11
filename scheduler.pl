@@ -1,5 +1,7 @@
-:- include('Schedule.pl').
+:- include('Schedule.pl', 'transformation.pl').
 :- dynamic slot/3.
+
+
 
 schedule_list_wrapper(ScheduledList) :-
     findall(X, task(X), Tasks),
@@ -20,7 +22,7 @@ replicate(Elem, Iter, [Elem|T]) :- replicate(Elem, Iter-1, T).
 
 assigned_slots([],[]).
 assigned_slots([H|T], [assigned(H,slot(D,S,E))|T_Assigned]) :-
-    slot(D,S,E),
+    slot(D,range(S,E)),
     assigned_slots(T, T_Assigned).
 
 
@@ -45,3 +47,12 @@ prerequisites_satisfied([H_task|T_task], Scheduled_tasks_list) :-
 
 before_range(Date1,_,Date2,_) :- beforeDate(Date1, Date2).
 before_range(Date, range(_,End1), Date, range(Start2,_)) :- beforeTime(End1,Start2).
+
+% a slot is valid if it is during available time and at least one hour
+slot(Date, range(Start, End)) :-
+    slot_available(slot(Date, range(Start, End))),
+    time_length(range(Start, End), 60).
+
+slot_available(slot_available(slot(Date, range(Start, End))) :-
+    available(Date, range(A_Start, A_End)),
+    beforeTime()
