@@ -1,11 +1,12 @@
 :- include('Schedule.pl').
 :- dynamic slot/2.
 
-schedule_list_wrapper(Block_List) :-
+start :- auto_load, createSlotsWrapper.
+
+schedule_list_wrapper(Scheduled_List) :-
     findall(X, task(X), Tasks),
     subdivide_tasks(Tasks, Block_List),
-    createSlotsWrapper.
-    % assigned_slots(Block_List, Scheduled_List),
+    assigned_slots(Block_List, Scheduled_List).
     % prereq_satisfied_wrapper(Scheduled_List).
 
 % divides tasks into blocks of one hour
@@ -23,11 +24,11 @@ replicate(Elem, Iter, [Elem|T]) :-
     replicate(Elem, NewIter, T).
 
 assigned_slots([],[]).
-assigned_slots([H|T], [assigned(H,slot(D,R))|T_Assigned]) :-
+assigned_slots([H_task|T_task], [assigned(H_task,slot(D,R))|T_Assigned]) :-
     slot(D,R),
-    beforeDue(H, D, R),
-    assigned_slots(T, T_Assigned),
-    non_member(assigned(_,slot(D,R)), T_Assigned).
+    beforeDue(H_task, D, R),
+    assigned_slots(T_task, T_Assigned).
+    % non_member(assigned(_,slot(D,R)), T_Assigned).
 
 % before_due is true if Date and End are before Task's due date
 beforeDue(Task, Date, range(_,Time)) :-
@@ -62,21 +63,22 @@ before_range(Date, range(_,End1), Date, range(Start2,_)) :- beforeTime(End1,Star
 
 non_member(_,[]).
 non_member(Elem, [H|T]) :-
-    Elem \== H,
+    Elem \= H,
     non_member(Elem, T).
 
 createSlotsWrapper :-
-		findall(available(X, Y), available(X, Y), Availables),
-		createSlots(Availables, Slots),
-		maplist(assert, Slots).
+    retractall(slot(_,_)),
+    findall(available(X, Y), available(X, Y), Availables),
+    createSlots(Availables, Slots),
+    maplist(assert, Slots).
 
 createSlots([],[]).
 createSlots([available(Date, Range)|Availables], [SlotsA|Slots]) :-
   	splitTime(Date, Range, SlotsA),
 	createSlots(Availables, Slots).
 
-
 splitTime(_, range(End, End), []).
+splitTime(_, range(Start, End), []) :- beforeTime(End, Start).
 splitTime(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
 		timeAfter15(Start, E15),
 		splitTime(Date, range(E15, End), Slots).

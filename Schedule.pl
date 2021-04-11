@@ -102,9 +102,9 @@ createStartEnd(row(_,'Start', SDate), row(_, 'End', EDate), [StartF, EndF]) :-
 
 % retractFacts clears the KB of all relevant facts that are to be loaded in
 retractFacts :-
-    retractall(task(_,_,_,_,_)),
-    retractall(day(_,_)),
-    retractall(event(_,_,_,_)).
+    retractall(task(_)), retractall(due(_,_,_)), retractall(duration(_,_)), retractall(prequisite(_,_)),
+    retractall(available(_,_)), retractall(planstart(_)), retractall(planend(_)),
+    retractall(event(_)), retractall(start(_,_)), retractall(end(_,_)).
     
 % assertFacts iterates through a list of facts and asserts them
 assertFacts([]).
