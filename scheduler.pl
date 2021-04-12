@@ -72,6 +72,7 @@ createSlots([available(Date, Range)|Availables], AllSlots) :-
 	createSlots(Availables, Slots),
     append(SlotsA, Slots, AllSlots).
 
+% not fully working yet, will finish tonight
 splitTime(Date, range(S, E), Slots) :-
     roundUp30(S, Start),
     roundDown30(E, End),
