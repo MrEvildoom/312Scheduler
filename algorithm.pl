@@ -78,8 +78,16 @@ createSlots([available(Date, Range)|Availables], AllSlots) :-
     createSlots(Availables, Slots),
     append(SlotsA, Slots, AllSlots).
 
-splitTime(_, range(End, End), []).
-%splitTime(_, range(Start, End), []) :- beforeTime(End, Start).
-splitTime(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
-    timeAfter15(Start, E15),
-    splitTime(Date, range(E15, End), Slots).
+% not fully working yet, will finish tonight
+splitTime(Date, range(S, E), Slots) :-
+    roundUp30(S, Start),
+    roundDown30(E, End),
+    splitTimeH(Date, range(Start,End), Slots).
+
+splitTimeH(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
+		timeAfterX(Start, E15, 30), beforeTime(E15, End),
+		splitTimeH(Date, range(E15, End), Slots).
+splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
+		timeAfterX(Start, E15, 30).
+
+
