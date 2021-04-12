@@ -1,6 +1,7 @@
 % CPSC 312 2021
 % Some simple Prolog examples. In public domain.
-:- include('Schedule.pl', 'scheduler.pl')
+% :- include('Schedule.pl').
+:- include('scheduler.pl').
 :- use_module(library(csv)).
 
 % To load in Prolog, at the ?- prompt:
@@ -27,14 +28,28 @@
 %    csv_write_file(File, Data, [separator(0',)]).
 
 %TODO on all convert times and dates to be atoms (can use conversions in Schedule.pl)
+getPlanDatesC([CDate|Dates]) :-
+		planstart(Date),
+		convertDate(CDate, Date),
+		nextDay(Date, Date2),
+		getPlanDatesHelpC(Date2, Dates).
+
+getPlanDatesHelpC(Date, [CDate]) :- planend(Date), convertDate(CDate, Date).
+getPlanDatesHelpC(Date, [CDate|Dates]) :-
+		nextDay(Date, Date2),
+		\+ planend(Date),
+		convertDate(CDate, Date),
+		getPlanDatesHelpC(Date2, Dates).
+
 getPlanDates([Date|Dates]) :-
 		planstart(Date),
 		nextDay(Date, Date2),
 		getPlanDatesHelp(Date2, Dates).
 
-getPlanDatesHelp(Date, [Date|Dates]) :- planend(Date).
+getPlanDatesHelp(Date, [Date]) :- planend(Date).
 getPlanDatesHelp(Date, [Date|Dates]) :-
 		nextDay(Date, Date2),
+		\+ planend(Date),
 		getPlanDatesHelp(Date2, Dates).
 
 writeToCSV :-
@@ -43,19 +58,19 @@ writeToCSV :-
 
 createAllRows([TopRow|TaskRows]) :-
 		createTopRow(TopRow),
-		createTaskRows(TaskRows).
+		createTaskRows(am(12,0), TaskRows).
 
 %Just appending row onto all the dates and returns it
 createTopRow(FactRow) :-
-		getPlanDates(Dates),
-		append(['row'], AllDates, Row1),
+		getPlanDatesC(Dates),
+		append(['row'], Dates, Row1),
 		FactRow =.. Row1.
 
 %need to make end when at time 23:45
-createTaskRows(pm(11,45), [Fact1|Facts]) :- 
+createTaskRows(pm(11,45), [Fact1]) :- 
 	planstart(Date),
-	createTaskList(Time, Date, Tasks),
-	createTaskRow(Time, Tasks, Fact1).
+	createTaskList(pm(11,45), Date, Tasks),
+	createTaskRow(pm(11,45), Tasks, Fact1).
 
 createTaskRows(Time, [Fact1|Facts]) :-
 	planstart(Date), beforeTime(Time, pm(11,45)),
@@ -65,16 +80,23 @@ createTaskRows(Time, [Fact1|Facts]) :-
 	createTaskRows(Time2, Facts).
 
 createTaskRow(Time, Tasks, FactRow) :-
-		append(['row', Time], Tasks, TaskRow),
+		timeConvert(Time, CTime),
+		append(['row', CTime], Tasks, TaskRow),
 		FactRow =.. TaskRow.
 
 % end when Date 2 is planend(Date), must account for a blank cell
-createTaskList(Time, Date, [Task1|Tasks]) :- assigned(Task1, slot(Date, range(Time, End))), planend(Date).
-createTaskList(Time, Date, [Task1|Tasks]) :-
-		assigned(Task1, slot(Date, range(Time, End))), % correct to way jack has assigned tasks
+createTaskList(Time, Date, ['']) :- 
+	%assigned(Task1, slot(Date, range(Time, End))), 
+	planend(Date).
+createTaskList(Time, Date, [''|Tasks]) :-
+		%assigned(Task1, slot(Date, range(Time, End))), % correct to way jack has assigned tasks
+		\+ planend(Date),
 		nextDay(Date, Date2),
 		createTaskList(Time, Date2, Tasks).
 
+write :-
+	createAllRows(Rows),
+	csv_write_file("output.csv", Rows).
 
 % insert("output.csv",[test(name, a, b, c), test(name, d, e, f), test(name, g, h, c)], test(name, g, m, i)]).
 % insert("output1.csv",[test(a, b, c1), test(d, e, f)]). %THIS WORKS

@@ -96,7 +96,8 @@ createEvents([event(Name, Date, Start, End)|Events], [NFact, SFact, EFact|Facts]
     createEvents(Events, Facts).
 
 % createStartEnd creates facts for the start and end of the plan
-createStartEnd(row(_,'Start', SDate), row(_, 'End', EDate), [StartF, EndF]) :-
+createStartEnd(row(_,'Start', StDate), row(_, 'End', EnDate), [StartF, EndF]) :-
+    convertDate(StDate, SDate), convertDate(EnDate, EDate),
     StartF =.. ['planstart', SDate],
     EndF =.. ['planend', EDate].
 
@@ -125,9 +126,34 @@ convertTime(Time, am(12, MM)) :-
     term_to_atom(0:MM, Time).
 convertTime(Time, pm(NH, MM)) :-
     term_to_atom(HH:MM, Time),
-    HH > 12, NH is HH - 12.
+    NH is HH - 12, HH > 12.
 convertTime(Time, pm(12, MM)) :-
     term_to_atom(12:MM, Time).
+
+timeConvert(am(H, M), Time) :-
+    term_to_atom(H:M, Time),
+    H < 12.
+timeConvert(am(12, M), Time) :-
+    term_to_atom(0:M, Time).
+timeConvert(pm(H, M), Time) :-
+    H < 12, PH is H + 12,
+    term_to_atom(PH:M, Time).
+timeConvert(pm(12, M), Time) :-
+    term_to_atom(12:M, Time).
+
+% timeConvert(am(H, M), Time) :-
+%     term_to_atom(H:NM, Time),
+%     H < 12, M < 10, atom_concat(0,M,NM).
+% timeConvert(am(12, M), Time) :-
+%     term_to_atom(0:NM, Time),
+%     M < 10, atom_concat(0,M,NM).
+% timeConvert(pm(H, M), Time) :-
+%     atom_concat(0,M,NM),
+%     term_to_atom(PH:NM, Time),
+%     H < 12, PH is H + 12, M < 10.
+% timeConvert(pm(12, M), Time) :-
+%     term_to_atom(12:NM, Time),
+%     M < 10, atom_concat(0,M,NM).
 
 % helper function to read from terminal as single quote atom
 read_sq(SQ) :-
@@ -186,29 +212,83 @@ lengthTHours(Range, L) :-
     L is LM / 60.
 
 % returns the time of the given time 15 minutes after.
-timeAfter15(am(H, M1), am(H, M2)) :-
-		M1 < 45,
-		M2 is M1 + 15.
-timeAfter15(pm(H, M1), pm(H, M2)) :-
-		M1 < 45,
-		M2 is M1 + 15.
-timeAfter15(am(H1, M1), am(H2, M2)) :-
-		H1 < 11, M1 > 44,
+timeAfter15(T1, T2) :-
+    timeAfterX(T1, T2, 15).
+% timeAfter15(am(H, M1), am(H, M2)) :-
+% 		M1 < 45,
+% 		M2 is M1 + 15.
+% timeAfter15(pm(H, M1), pm(H, M2)) :-
+% 		M1 < 45,
+% 		M2 is M1 + 15.
+% timeAfter15(am(H1, M1), am(H2, M2)) :-
+% 		H1 < 11, M1 > 44,
+% 		H2 is H1 + 1,
+% 		M2 is M1 - 45.
+% timeAfter15(pm(H1, M1), pm(H2, M2)) :-
+% 		H1 < 11, M1 > 44,
+% 		H2 is H1 + 1,
+% 		M2 is M1 - 45.
+% timeAfter15(am(12, M1), am(1, M2)) :-
+% 		M1 > 44,
+% 		M2 is M1 - 45.
+% timeAfter15(pm(12, M1), pm(1, M2)) :-
+% 		M1 > 44,
+% 		M2 is M1 - 45.
+% timeAfter15(am(11, M1), pm(12, M2)) :-
+% 		M1 > 44,
+% 		M2 is M1 - 45.
+
+% returns the time of the given time 30 minutes after.
+timeAfter30(T1, T2) :-
+    timeAfterX(T1, T2, 30).
+% timeAfter30(am(H, M1), am(H, M2)) :-
+% 		M1 < 30,
+% 		M2 is M1 + 30.
+% timeAfter30(pm(H, M1), pm(H, M2)) :-
+% 		M1 < 30,
+% 		M2 is M1 + 30.
+% timeAfter30(am(H1, M1), am(H2, M2)) :-
+% 		H1 < 11, M1 > 29,
+% 		H2 is H1 + 1,
+% 		M2 is M1 - 30.
+% timeAfter30(pm(H1, M1), pm(H2, M2)) :-
+% 		H1 < 11, M1 > 29,
+% 		H2 is H1 + 1,
+% 		M2 is M1 - 30.
+% timeAfter30(am(12, M1), am(1, M2)) :-
+% 		M1 > 29,
+% 		M2 is M1 - 30.
+% timeAfter30(pm(12, M1), pm(1, M2)) :-
+% 		M1 > 29,
+% 		M2 is M1 - 30.
+% timeAfter30(am(11, M1), pm(12, M2)) :-
+% 		M1 > 29,
+% 		M2 is M1 - 30.
+
+% returns the time of the given time X minutes after.
+timeAfterX(am(H, M1), am(H, M2), X) :-
+		M1 < X,
+		M2 is M1 + X.
+timeAfterX(pm(H, M1), pm(H, M2), X) :-
+		M1 < X,
+		M2 is M1 + X.
+timeAfterX(am(H1, M1), am(H2, M2), X) :-
+		H1 < 11, M1 > X-1,
 		H2 is H1 + 1,
-		M2 is M1 - 45.
-timeAfter15(pm(H1, M1), pm(H2, M2)) :-
-		H1 < 11, M1 > 44,
+		M2 is M1 - X.
+timeAfterX(pm(H1, M1), pm(H2, M2), X) :-
+		H1 < 11, M1 > X-1,
 		H2 is H1 + 1,
-		M2 is M1 - 45.
-timeAfter15(am(12, M1), am(1, M2)) :-
-		M1 > 44,
-		M2 is M1 - 45.
-timeAfter15(pm(12, M1), pm(1, M2)) :-
-		M1 > 44,
-		M2 is M1 - 45.
-timeAfter15(am(11, M1), pm(12, M2)) :-
-		M1 > 44,
-		M2 is M1 - 45.
+		M2 is M1 - X.
+timeAfterX(am(12, M1), am(1, M2), X) :-
+		M1 > X-1,
+		M2 is M1 - X.
+timeAfterX(pm(12, M1), pm(1, M2), X) :-
+		M1 > X-1,
+		M2 is M1 - X.
+timeAfterX(am(11, M1), pm(12, M2), X) :-
+		M1 > X-1,
+		M2 is M1 - X.
 
 % gives the next day of the month
 nextDay(date(M1,D1,Y), date(M2,1,Y)) :-
@@ -234,3 +314,22 @@ monthend(10, 31).
 monthend(11, 30).
 % monthend(12, 31).
 
+roundDown30(am(H, M), am(H,NM)) :-
+    M < 30, NM is 0.
+roundDown30(am(H, M), am(H,NM)) :-
+    M > 29, NM is 30.
+roundDown30(pm(H, M), pm(H,NM)) :-
+    M < 30, NM is 0.
+roundDown30(pm(H, M), pm(H,NM)) :-
+    M > 29, NM is 30.
+
+roundUp30(am(H, M), am(H,NM)) :-
+    M < 30, NM is 30.
+roundUp30(am(H, M), T) :-
+    M > 29,
+    timeAfter30(am(H,30), T).
+roundUp30(pm(H, M), pm(H,NM)) :-
+    M < 30, NM is 30.
+roundUp30(pm(H, M), pm(H,NM)) :-
+    M > 29,
+    timeAfter30(pm(H,30), T).
