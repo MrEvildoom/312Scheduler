@@ -58,7 +58,7 @@ createTaskRows(pm(11,45), [Fact1|Facts]) :-
 	createTaskRow(Time, Tasks, Fact1).
 
 createTaskRows(Time, [Fact1|Facts]) :-
-	planstart(Date),
+	planstart(Date), beforeTime(Time, pm(11,45)),
 	createTaskList(Time, Date, Tasks),
 	createTaskRow(Time, Tasks, Fact1),
 	timeAfter15(Time, Time2),
