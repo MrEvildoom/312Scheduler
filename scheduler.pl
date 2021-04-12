@@ -1,5 +1,5 @@
 :- include('Schedule.pl').
-:- dynamic slot/2.
+:- dynamic slot/2, assigned/2.
 
 schedule_list_wrapper(ScheduledList) :-
     findall(X, task(X), Tasks),
