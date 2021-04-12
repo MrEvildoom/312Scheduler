@@ -58,7 +58,7 @@ writeToCSV :-
 
 createAllRows([TopRow|TaskRows]) :-
 		createTopRow(TopRow),
-		createTaskRows(am(12,0), TaskRows).
+		createTaskRows30(am(12,0), TaskRows).
 
 %Just appending row onto all the dates and returns it
 createTopRow(FactRow) :-
@@ -67,17 +67,29 @@ createTopRow(FactRow) :-
 		FactRow =.. Row1.
 
 %need to make end when at time 23:45
-createTaskRows(pm(11,45), [Fact1]) :- 
+createTaskRows15(pm(11,45), [Fact1]) :- 
 	planstart(Date),
 	createTaskList(pm(11,45), Date, Tasks),
 	createTaskRow(pm(11,45), Tasks, Fact1).
 
-createTaskRows(Time, [Fact1|Facts]) :-
+createTaskRows15(Time, [Fact1|Facts]) :-
 	planstart(Date), beforeTime(Time, pm(11,45)),
 	createTaskList(Time, Date, Tasks),
 	createTaskRow(Time, Tasks, Fact1),
-	timeAfter15(Time, Time2),
-	createTaskRows(Time2, Facts).
+	timeAfter30(Time, Time2),
+	createTaskRows15(Time2, Facts).
+
+createTaskRows30(pm(11,30), [Fact1]) :- 
+	planstart(Date),
+	createTaskList(pm(11,30), Date, Tasks),
+	createTaskRow(pm(11,30), Tasks, Fact1).
+
+createTaskRows30(Time, [Fact1|Facts]) :-
+	planstart(Date), beforeTime(Time, pm(11,30)),
+	createTaskList(Time, Date, Tasks),
+	createTaskRow(Time, Tasks, Fact1),
+	timeAfter30(Time, Time2),
+	createTaskRows30(Time2, Facts).
 
 createTaskRow(Time, Tasks, FactRow) :-
 		timeConvert(Time, CTime),
