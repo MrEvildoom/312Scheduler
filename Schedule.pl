@@ -118,7 +118,7 @@ assertFacts([H|T]) :-
 convertDate(Date, date(MM, DD, YYYY)) :-
     term_to_atom(MM/DD/YYYY, Date).
 
-% converts a single quote time item into am(HH, MM) or pm(HH, MM)
+% converts a single quote time item into am(HH, MM) or pm(HH, MM) only work going from 'HH:MM' to am(HH, MM)
 convertTime(Time, am(HH, MM)) :-
     term_to_atom(HH:MM, Time),
     HH < 12, HH > 0.
@@ -130,6 +130,7 @@ convertTime(Time, pm(NH, MM)) :-
 convertTime(Time, pm(12, MM)) :-
     term_to_atom(12:MM, Time).
 
+% converts an am/pm time into a single quote time.  only work going from 'HH:MM' to am(HH, MM)
 timeConvert(am(H, M), Time) :-
     term_to_atom(H:M, Time),
     H < 12.
@@ -314,22 +315,28 @@ monthend(10, 31).
 monthend(11, 30).
 % monthend(12, 31).
 
+% rounds time down to a 30 min interval unless already on one
 roundDown30(am(H, M), am(H,NM)) :-
     M < 30, NM is 0.
 roundDown30(am(H, M), am(H,NM)) :-
-    M > 29, NM is 30.
+    M > 30, NM is 30.
 roundDown30(pm(H, M), pm(H,NM)) :-
     M < 30, NM is 0.
 roundDown30(pm(H, M), pm(H,NM)) :-
-    M > 29, NM is 30.
+    M > 30, NM is 30.
+roundDown30(am(H,30), am(H, 30)).
+roundDown30(pm(H,30), pm(H, 30)).
 
+% rounds time up to a 30 min interval unless already on one
 roundUp30(am(H, M), am(H,NM)) :-
-    M < 30, NM is 30.
+    M < 31, M >0, NM is 30.
 roundUp30(am(H, M), T) :-
-    M > 29,
+    M > 30,
     timeAfter30(am(H,30), T).
 roundUp30(pm(H, M), pm(H,NM)) :-
-    M < 30, NM is 30.
-roundUp30(pm(H, M), pm(H,NM)) :-
-    M > 29,
+    M < 31, M > 0, NM is 30.
+roundUp30(pm(H, M), T) :-
+    M > 30,
     timeAfter30(pm(H,30), T).
+roundUp30(am(H, 0), am(H, 0)).
+roundUp30(pm(H, 0), pm(H, 0)).

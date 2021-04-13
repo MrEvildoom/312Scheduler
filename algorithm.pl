@@ -74,7 +74,7 @@ createSlotsWrapper :-
 
 createSlots([],[]).
 createSlots([available(Date, Range)|Availables], AllSlots) :-
-  splitTime(Date, Range, SlotsA),
+    splitTime(Date, Range, SlotsA),
     createSlots(Availables, Slots),
     append(SlotsA, Slots, AllSlots).
 
