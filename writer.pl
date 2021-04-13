@@ -27,7 +27,7 @@
     %maplist(map_item, Data, Rows),
 %    csv_write_file(File, Data, [separator(0',)]).
 
-assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
+% assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
 
 % if asssigned slots are stored in KB like: assigned(TName, slot(Date, Range)) then to make all cells in output:
 % create cells asserts in KB cell(TName, Slot), where TName is the task name assigned to Slot or '' if no task assigned
