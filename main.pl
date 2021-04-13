@@ -29,7 +29,21 @@ checkYes(n).
 processQuestions(n) :-
     write('Understood. Moving forward to create a schedule.\n'), flush_output(current_output).
 processQuestions(y) :-
-    write('What would you like to know?.\n (1) Which tasks Take longer than X hours? \n (2) When am I available on X date?'), flush_output(current_output).
+    write('What would you like to know?\n'), flush_output(current_output),
+    write('(1) Which tasks take at least X hours? \n'), flush_output(current_output),
+    write('(2) When am I available on X date? \n'), flush_output(current_output),
+    read_sq(ChosenOption),
+    executeChosenMethod(ChosenOption).
+
+executeChosenMethod('1') :-
+    write('You have chosen: Which tasks take at least X hours? \n'), flush_output(current_output),
+    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output).
+    read_sq(MinLength).
+
+executeChosenMethod('2') :-
+    write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
+    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output).
+    read_sq(ChosenDate).
 
   
   %cd desktop/CPSC312/312Scheduler
