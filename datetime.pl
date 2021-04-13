@@ -208,3 +208,16 @@ roundUp30(pm(H, M), T) :-
     timeAfter30(pm(H,30), T).
 roundUp30(am(H, 0), am(H, 0)).
 roundUp30(pm(H, 0), pm(H, 0)).
+
+%betweenTime(range(S, E), Time) if true if Time is in the range(S, E)
+betweenTime(range(Time, E), Time).
+betweenTime(range(S, Time), Time).
+betweenTime(range(S, E), Time) :-
+	beforeTime(S, Time),
+	beforeTime(Time, E).
+
+%betweenTimeNE(range(S, E), Time) if true if Time is in the range(S, E) not including the end time
+betweenTimeNE(range(S, Time), Time).
+betweenTimeNE(range(S, E), Time) :-
+	beforeTime(S, Time),
+	beforeTime(Time, E).

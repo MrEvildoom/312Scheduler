@@ -90,4 +90,14 @@ splitTimeH(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
 splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
 		timeAfterX(Start, E15, 30).
 
+%filters out slots that are during events
+filterEvents([slot(Date, range(S, E))|Slots], [slot(Date, range(S, E))|FSlots]) :-
+		\+ duringEvent(S),
+		filterEvents(Slots, FSlots).
+filterEvents([slot(Date, range(S, E))|Slots], FSlots) :-
+		duringEvent(S),
+		filterEvents(Slots, FSlots).
 
+duringEvent(Time) :-
+		event(Date, Range),
+		betweenTime(Range, Time).

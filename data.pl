@@ -87,13 +87,11 @@ convertTimeRange([TimeR|Times], [range(StartTime, EndTime)|ListRange]) :-
 
 % createEvents iterates through the events and formats them into propper facts ie. start('Practice', date(04, 12, 2021), pm(4, 45))
 createEvents([],[]).
-createEvents([event(Name, Date, Start, End)|Events], [NFact, SFact, EFact|Facts]) :-
-    NFact =.. ['event', Name],
+createEvents([event(Name, Date, Start, End)|Events], [NFact|Facts]) :-
+    NFact =.. ['event', Name, NewDate, range(NewStart, NewEnd)],
     convertDate(Date, NewDate),
     convertTime(Start, NewStart),
     convertTime(End, NewEnd),
-    SFact =.. ['start', NewDate, NewStart],
-    EFact =.. ['end', NewDate, NewEnd],
     createEvents(Events, Facts).
 
 % createStartEnd creates facts for the start and end of the plan
@@ -106,7 +104,7 @@ createStartEnd(row(_,'Start', StDate), row(_, 'End', EnDate), [StartF, EndF]) :-
 retractFacts :-
     retractall(task(_)), retractall(due(_,_,_)), retractall(duration(_,_)), retractall(prequisite(_,_)),
     retractall(available(_,_)), retractall(planstart(_)), retractall(planend(_)),
-    retractall(event(_)), retractall(start(_,_)), retractall(end(_,_)).
+    retractall(event(_,_,_)).
     
 
 % assertFacts iterates through a list of facts and asserts them

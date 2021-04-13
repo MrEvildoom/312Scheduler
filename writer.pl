@@ -1,7 +1,6 @@
 %% File to write the schedule results to a CSV file %%
 :- include('algorithm.pl').
 
-
 % assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
 
 % if asssigned slots are stored in KB like: assigned(TName, slot(Date, Range)) then to make all cells in output:
