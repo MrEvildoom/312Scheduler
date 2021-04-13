@@ -1,14 +1,48 @@
 :- include('data.pl').
 :- dynamic slot/2.
 
-start :- auto_load, createSlotsWrapper.
+start :- auto_load.
 
-schedule_list_wrapper(Scheduled_List) :-
+schedule_list(Scheduled_List) :-
+    createSlotsWrapper,
     findall(X, task(X), Tasks),
+    % prereq_sort(Tasks, Sorted_Tasks),
+    % subdivide_tasks(Sorted_Tasks, Block_List),
     subdivide_tasks(Tasks, Block_List),
-    assigned_slots_wrapper(Block_List, Scheduled_List).
-    % assigned_slots_wrapper(Tasks, Scheduled_List).
-    % prereq_satisfied_wrapper(Scheduled_List).
+    assigned_slots_wrapper(Block_List, Scheduled_List),
+    prereq_satisfied_wrapper(Scheduled_List).
+
+prereq_sort(List, Sorted_List) :-
+    prioritize_tasks(List, Priority_List),
+    insert_sort(Priority_List, Sort_P_List),
+    strip_priority(Sort_P_List, Sorted_List).
+
+% findall(X, task(X), Tasks), order_tasks(Tasks, Ordered), insert_sort(Ordered, X).
+strip_priority([],[]).
+strip_priority([prioritized(X,_)|T], [X|T_res]) :-
+    strip_priority(T, T_res).
+
+prioritize_tasks([],[]).
+prioritize_tasks([H|T], [prioritized(H,P)|T_ordered]) :-
+    prereq_priority(H,P),
+    prioritize_tasks(T, T_ordered).
+
+% prereq_priority(Task, Priority) is true when Priority is the length of prereq-chain behind Task
+prereq_priority(Task, 0) :- prequisite(Task,'').
+prereq_priority(Task, Priority) :-
+    prequisite(Task, Prereq),
+    prereq_priority(Prereq, P_Priority),
+    Priority is P_Priority + 1.
+
+% from http://kti.ms.mff.cuni.cz/~bartak/prolog/sorting.html
+insert_sort(List,Sorted):-i_sort(List,[],Sorted).
+i_sort([],Acc,Acc).
+i_sort([H|T],Acc,Sorted):-insert(H,Acc,NAcc),i_sort(T,NAcc,Sorted).
+% from http://kti.ms.mff.cuni.cz/~bartak/prolog/sorting.html
+% altered to work with prereq priority
+insert(prioritized(_,X),[prioritized(_,Y)|T],[prioritized(_,Y)|NT]):-X>Y,insert(X,T,NT).
+insert(prioritized(_,X),[prioritized(_,Y)|T],[prioritized(_,X),prioritized(_,Y)|T]):-X=<Y.
+insert(X,[],[X]).
 
 % divides tasks into blocks of one hour
 subdivide_tasks([],[]).
@@ -35,8 +69,6 @@ assigned_slots([H_task|T_task], [assigned(H_task,slot(D,R))|T_Assigned], New_Set
     set_insert(slot(D,R), Set, New_Set).
     % beforeDue(H_task, D, R), 
     % non_member(assigned(_,slot(D,R)), T_Assigned).
-
-spypoint.
 
 % is_valid_slot(Slot) is true when Slot is in the Knowledge Base
 is_valid_slot(slot(D,Range)) :- slot(D,Range).
@@ -87,6 +119,7 @@ prereq_satisfied([assigned(H,Slot)|T] , List) :-
     prereq_satisfied(T,List).
 
 % prereq_iter(Date, Start, Prereq, List) is true if all prereqs in list end before Date, Start. 
+prereq_iter(_,_,[]).
 prereq_iter(Slot, Prereq, [assigned(Prereq,Pre_Slot) | T]) :-
     % if Head of the list is a prereq
     before_slot(Pre_Slot, Slot),
