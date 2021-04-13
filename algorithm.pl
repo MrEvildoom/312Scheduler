@@ -1,4 +1,4 @@
-:- include('Schedule.pl').
+:- include('data.pl').
 :- dynamic slot/2.
 
 start :- auto_load, createSlotsWrapper.
