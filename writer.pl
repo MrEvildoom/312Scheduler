@@ -2,7 +2,7 @@
 % Some simple Prolog examples. In public domain.
 % :- include('Schedule.pl').
 :- include('algorithm.pl').
-:- use_module(library(csv)).
+:- use_module(library(csv), algorithm).
 
 % To load in Prolog, at the ?- prompt:
 % swipl

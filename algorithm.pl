@@ -1,8 +1,10 @@
+:- module(algorithm, [schedule_list/1]).
+
 :- include('data.pl').
 :- use_module(set).
 :- dynamic slot/2.
 
-:- module(algorithm, [schedule_list/1]).
+
 
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,
@@ -33,7 +35,7 @@ assign_slots([H_task|T_task], [assigned(H_task,slot(D,R))|T_Assigned], New_Set) 
     set_insert(slot(D,R), Set, New_Set).
 
 % before_due is true if Date and End are before Task's due date
-before_due(Task, Date, range(_,Time)) :-
+before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
     (Date = Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
