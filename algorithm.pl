@@ -94,12 +94,14 @@ splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
 %filters out slots that are during events
 filterEvents([],[]).
 filterEvents([slot(Date, range(S, E))|Slots], [slot(Date, range(S, E))|FSlots]) :-
-		\+ duringEvent(Date, S),
+		\+ duringEvent(Date, S, Name),
 		filterEvents(Slots, FSlots).
 filterEvents([slot(Date, range(S, E))|Slots], FSlots) :-
-		duringEvent(Date, S),
+		duringEvent(Date, S, Name),
+        %assert(assigned(Name, slot(Date, range(S, E)))),
 		filterEvents(Slots, FSlots).
 
-duringEvent(Date, Time) :-
+duringEvent(Date, Time, Name) :-
 		event(Name, Date, Range),
 		betweenTimeNE(Range, Time).
+

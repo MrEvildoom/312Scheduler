@@ -8,36 +8,52 @@
 createCellsWrapper :-
 	retractall(cell(_,_,_)),
 	planstart(Date),
-	createCells(Date).
+	createCells(Date, Cells),
+	maplist(assert, Cells).
 
-createCells(Date) :- planend(Date), createCellsHelper(am(12,0), Date).
-createCells(Date) :-
+createCells(Date, Cells) :- planend(Date), createCellsHelper(am(12,0), Date, Cells).
+createCells(Date, AllCells) :-
 	\+ planend(Date),
-	createCellsHelper(am(12,0), Date),
+	createCellsHelper(am(12,0), Date, Cells1),
 	nextDay(Date, ND),
-	createCells(ND).
+	append(Cells1, Cells, AllCells),
+	createCells(ND, Cells).
 
-createCellsHelper(Time, Date) :-
+createCellsHelper(Time, Date, [cell(TName, Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
 	assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
-	assert(cell(TName, Date, range(Time, End))),
+	%assert(cell(TName, Date, range(Time, End))),
 	timeAfter30(Time, T30),
-	createCellsHelper(T30, Date).
+	createCellsHelper(T30, Date, Cells).
 
-createCellsHelper(Time, Date) :-
+createCellsHelper(Time, Date, [cell('', Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
 	\+ assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
-	assert(cell('', Date, range(Time, End))),
+	\+ duringEvent(Date, Time, EName),
+	%assert(cell('', Date, range(Time, End))),
 	timeAfter30(Time, T30),
-	createCellsHelper(T30, Date).
+	createCellsHelper(T30, Date, Cells).
 
-createCellsHelper(pm(11,30), Date) :-
-	assigned(TName, slot(Date, range(pm(11,30), End))),
-	assert(cell(TName, Date, range(pm(11,30), End))).
+createCellsHelper(Time, Date, [cell(EName, Date, range(Time, End))|Cells]) :-
+	beforeTime(Time, pm(11,30)),
+	\+ assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
+	duringEvent(Date, Time, EName),
+	%assert(cell('', Date, range(Time, End))),
+	timeAfter30(Time, T30),
+	createCellsHelper(T30, Date, Cells).
 
-createCellsHelper(pm(11,30), Date) :-
+createCellsHelper(pm(11,30), Date, [cell(TName, Date, range(pm(11,30), End))]) :-
+	assigned(TName, slot(Date, range(pm(11,30), End))).
+	%assert(cell(TName, Date, range(pm(11,30), End))).
+
+createCellsHelper(pm(11,30), Date, [cell('', Date, range(pm(11,30), End))]) :-
 	\+ assigned(TName, slot(Date, range(pm(11,30), End))),
-	assert(cell('', Date, range(pm(11,30), End))).
+	\+ duringEvent(Date, pm(11,30), EName).
+	%assert(cell('', Date, range(pm(11,30), End))).
+
+createCellsHelper(pm(11,30), Date, [cell(EName, Date, range(pm(11,30), End))]) :-
+	\+ assigned(TName, slot(Date, range(pm(11,30), End))),
+	duringEvent(Date, pm(11,30), EName).
 
 % gets plan dates converted to SQ
 getPlanDatesC([CDate|Dates]) :-
@@ -109,7 +125,7 @@ createTaskRow(Time, Tasks, FactRow) :-
 		FactRow =.. TaskRow.
 
 % creates a list of tasks on a given time cycling through all dates (until planend)
-createTaskList(Time, Date, [TName]) :- %changequotes to TName
+createTaskList(Time, Date, [TName]) :- 
 	cell(TName, Date, range(Time, End)),
 	planend(Date).
 createTaskList(Time, Date, [TName|Tasks]) :-
