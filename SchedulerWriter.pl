@@ -1,7 +1,7 @@
 % CPSC 312 2021
 % Some simple Prolog examples. In public domain.
 % :- include('Schedule.pl').
-:- include('scheduler.pl').
+:- include('algorithm.pl').
 :- use_module(library(csv)).
 
 % To load in Prolog, at the ?- prompt:
