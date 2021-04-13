@@ -1,31 +1,6 @@
-% CPSC 312 2021
-% Some simple Prolog examples. In public domain.
-% :- include('Schedule.pl').
+%% File to write the schedule results to a CSV file %%
 :- include('algorithm.pl').
-:- use_module(library(csv)).
 
-% To load in Prolog, at the ?- prompt:
-% swipl
-% ?- [write].
-
-%map_item(P, row(Name, Date, range(S, E))) :-
-%    P =.. [_, Date, Name, atom_concat(S, '-', E)].
-
-%map_item(P, row(Name, Date, Range)) :-
-%    P =.. [_, Date, Name, Range].
-
-%map_item(P, row(Name, Date, range(S, E))) :-
-%	atomic_concat(S, ':' ,L),
-%	atomic_concat(L, ':' ,R),
-%   P =.. [_, Date, Name, R].
-
-%map_item(P, row(Name, Date, Range)) :-
-	%atomic_concat('', ':', E),
-%    P =.. [_, Date, Name, E].
-
-%insert(File, Data) :-
-    %maplist(map_item, Data, Rows),
-%    csv_write_file(File, Data, [separator(0',)]).
 
 % assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
 
@@ -65,7 +40,7 @@ createCellsHelper(pm(11,30), Date) :-
 	\+ assigned(TName, slot(Date, range(pm(11,30), End))),
 	assert(cell('', Date, range(pm(11,30), End))).
 
-%TODO on all convert times and dates to be atoms (can use conversions in Schedule.pl)
+% gets plan dates converted to SQ
 getPlanDatesC([CDate|Dates]) :-
 		planstart(Date),
 		convertDate(CDate, Date),
@@ -79,6 +54,7 @@ getPlanDatesHelpC(Date, [CDate|Dates]) :-
 		convertDate(CDate, Date),
 		getPlanDatesHelpC(Date2, Dates).
 
+%Gets plan dates in date(MM, DD, YYYY) format
 getPlanDates([Date|Dates]) :-
 		planstart(Date),
 		nextDay(Date, Date2),
@@ -90,10 +66,7 @@ getPlanDatesHelp(Date, [Date|Dates]) :-
 		\+ planend(Date),
 		getPlanDatesHelp(Date2, Dates).
 
-writeToCSV :-
-	createAllRows(Rows),
-	csv_write_file('out.csv', Rows).
-
+%Creates all rows for CSV writing
 createAllRows([TopRow|TaskRows]) :-
 		createTopRow(TopRow),
 		createTaskRows30(am(12,0), TaskRows).
@@ -104,7 +77,7 @@ createTopRow(FactRow) :-
 		append(['row'], Dates, Row1),
 		FactRow =.. Row1.
 
-%need to make end when at time 23:45
+%creates task rows for 15 min intervals OLD
 createTaskRows15(pm(11,45), [Fact1]) :- 
 	planstart(Date),
 	createTaskList(pm(11,45), Date, Tasks),
@@ -117,6 +90,7 @@ createTaskRows15(Time, [Fact1|Facts]) :-
 	timeAfter30(Time, Time2),
 	createTaskRows15(Time2, Facts).
 
+% creates task rows for 30 min intervals
 createTaskRows30(pm(11,30), [Fact1]) :- 
 	planstart(Date),
 	createTaskList(pm(11,30), Date, Tasks),
@@ -129,12 +103,13 @@ createTaskRows30(Time, [Fact1|Facts]) :-
 	timeAfter30(Time, Time2),
 	createTaskRows30(Time2, Facts).
 
+% creates the task row for the given time
 createTaskRow(Time, Tasks, FactRow) :-
 		timeConvert(Time, CTime),
 		append(['row', CTime], Tasks, TaskRow),
 		FactRow =.. TaskRow.
 
-% end when Date 2 is planend(Date), must account for a blank cell
+% creates a list of tasks on a given time cycling through all dates (until planend)
 createTaskList(Time, Date, [TName]) :- %changequotes to TName
 	cell(TName, Date, range(Time, End)),
 	planend(Date).
@@ -144,10 +119,30 @@ createTaskList(Time, Date, [TName|Tasks]) :-
 	nextDay(Date, Date2),
 	createTaskList(Time, Date2, Tasks).
 
+%writes results to CSV file
 write :-
 	createCellsWrapper,
 	createAllRows(Rows),
 	csv_write_file("output.csv", Rows).
+
+%map_item(P, row(Name, Date, range(S, E))) :-
+%    P =.. [_, Date, Name, atom_concat(S, '-', E)].
+
+%map_item(P, row(Name, Date, Range)) :-
+%    P =.. [_, Date, Name, Range].
+
+%map_item(P, row(Name, Date, range(S, E))) :-
+%	atomic_concat(S, ':' ,L),
+%	atomic_concat(L, ':' ,R),
+%   P =.. [_, Date, Name, R].
+
+%map_item(P, row(Name, Date, Range)) :-
+	%atomic_concat('', ':', E),
+%    P =.. [_, Date, Name, E].
+
+%insert(File, Data) :-
+    %maplist(map_item, Data, Rows),
+%    csv_write_file(File, Data, [separator(0',)]).
 
 % insert("output.csv",[test(name, a, b, c), test(name, d, e, f), test(name, g, h, c)], test(name, g, m, i)]).
 % insert("output1.csv",[test(a, b, c1), test(d, e, f)]). %THIS WORKS
