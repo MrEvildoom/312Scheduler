@@ -1,7 +1,7 @@
 % CPSC 312 Project
 % Task Scheduler
 % Brendan Woodward, David Liu, Jack Heidal
-:- include('datetime.pl')
+:- include('datetime.pl').
 :- use_module(library(csv)).
 :- dynamic task/1, due/3, duration/2, prequisite/2, available/2, event/1, start/2, end/2, planstart/1, planend/1.
 
@@ -59,7 +59,7 @@ createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PR
     PRFact =.. ['prequisite', Name, Pre],
     createTasks(Tasks, Facts).
 
-% createProfile iterates through the profile and foramts them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
+% createProfile iterates through the profile and formats them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
 createProfile([],[]).
 createProfile([avail(Date, Day, Times)|Dates], Facts) :-
     atomic_list_concat(TList, ',', Times),
