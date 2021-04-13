@@ -6,43 +6,10 @@ start :- auto_load.
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,
     findall(X, task(X), Tasks),
-    % prereq_sort(Tasks, Sorted_Tasks),
-    % subdivide_tasks(Sorted_Tasks, Block_List),
     subdivide_tasks(Tasks, Block_List),
     assigned_slots_wrapper(Block_List, Scheduled_List),
     prereq_satisfied_wrapper(Scheduled_List).
 
-prereq_sort(List, Sorted_List) :-
-    prioritize_tasks(List, Priority_List),
-    insert_sort(Priority_List, Sort_P_List),
-    strip_priority(Sort_P_List, Sorted_List).
-
-% findall(X, task(X), Tasks), order_tasks(Tasks, Ordered), insert_sort(Ordered, X).
-strip_priority([],[]).
-strip_priority([prioritized(X,_)|T], [X|T_res]) :-
-    strip_priority(T, T_res).
-
-prioritize_tasks([],[]).
-prioritize_tasks([H|T], [prioritized(H,P)|T_ordered]) :-
-    prereq_priority(H,P),
-    prioritize_tasks(T, T_ordered).
-
-% prereq_priority(Task, Priority) is true when Priority is the length of prereq-chain behind Task
-prereq_priority(Task, 0) :- prequisite(Task,'').
-prereq_priority(Task, Priority) :-
-    prequisite(Task, Prereq),
-    prereq_priority(Prereq, P_Priority),
-    Priority is P_Priority + 1.
-
-% from http://kti.ms.mff.cuni.cz/~bartak/prolog/sorting.html
-insert_sort(List,Sorted):-i_sort(List,[],Sorted).
-i_sort([],Acc,Acc).
-i_sort([H|T],Acc,Sorted):-insert(H,Acc,NAcc),i_sort(T,NAcc,Sorted).
-% from http://kti.ms.mff.cuni.cz/~bartak/prolog/sorting.html
-% altered to work with prereq priority
-insert(prioritized(_,X),[prioritized(_,Y)|T],[prioritized(_,Y)|NT]):-X>Y,insert(X,T,NT).
-insert(prioritized(_,X),[prioritized(_,Y)|T],[prioritized(_,X),prioritized(_,Y)|T]):-X=<Y.
-insert(X,[],[X]).
 
 % divides tasks into blocks of one hour
 subdivide_tasks([],[]).
