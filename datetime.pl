@@ -83,56 +83,10 @@ lengthTHours(Range, L) :-
 % returns the time of the given time 15 minutes after.
 timeAfter15(T1, T2) :-
     timeAfterX(T1, T2, 15).
-% timeAfter15(am(H, M1), am(H, M2)) :-
-% 		M1 < 45,
-% 		M2 is M1 + 15.
-% timeAfter15(pm(H, M1), pm(H, M2)) :-
-% 		M1 < 45,
-% 		M2 is M1 + 15.
-% timeAfter15(am(H1, M1), am(H2, M2)) :-
-% 		H1 < 11, M1 > 44,
-% 		H2 is H1 + 1,
-% 		M2 is M1 - 45.
-% timeAfter15(pm(H1, M1), pm(H2, M2)) :-
-% 		H1 < 11, M1 > 44,
-% 		H2 is H1 + 1,
-% 		M2 is M1 - 45.
-% timeAfter15(am(12, M1), am(1, M2)) :-
-% 		M1 > 44,
-% 		M2 is M1 - 45.
-% timeAfter15(pm(12, M1), pm(1, M2)) :-
-% 		M1 > 44,
-% 		M2 is M1 - 45.
-% timeAfter15(am(11, M1), pm(12, M2)) :-
-% 		M1 > 44,
-% 		M2 is M1 - 45.
 
 % returns the time of the given time 30 minutes after.
 timeAfter30(T1, T2) :-
     timeAfterX(T1, T2, 30).
-% timeAfter30(am(H, M1), am(H, M2)) :-
-% 		M1 < 30,
-% 		M2 is M1 + 30.
-% timeAfter30(pm(H, M1), pm(H, M2)) :-
-% 		M1 < 30,
-% 		M2 is M1 + 30.
-% timeAfter30(am(H1, M1), am(H2, M2)) :-
-% 		H1 < 11, M1 > 29,
-% 		H2 is H1 + 1,
-% 		M2 is M1 - 30.
-% timeAfter30(pm(H1, M1), pm(H2, M2)) :-
-% 		H1 < 11, M1 > 29,
-% 		H2 is H1 + 1,
-% 		M2 is M1 - 30.
-% timeAfter30(am(12, M1), am(1, M2)) :-
-% 		M1 > 29,
-% 		M2 is M1 - 30.
-% timeAfter30(pm(12, M1), pm(1, M2)) :-
-% 		M1 > 29,
-% 		M2 is M1 - 30.
-% timeAfter30(am(11, M1), pm(12, M2)) :-
-% 		M1 > 29,
-% 		M2 is M1 - 30.
 
 % returns the time of the given time X minutes after.
 timeAfterX(am(H, M1), am(H, M2), X) :-
