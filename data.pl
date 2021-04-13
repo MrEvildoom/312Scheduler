@@ -59,7 +59,7 @@ createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PR
     PRFact =.. ['prequisite', Name, Pre],
     createTasks(Tasks, Facts).
 
-% createProfile iterates through the profile and foramts them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
+% createProfile iterates through the profile and formats them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
 createProfile([],[]).
 createProfile([avail(Date, Day, Times)|Dates], Facts) :-
     atomic_list_concat(TList, ',', Times),
