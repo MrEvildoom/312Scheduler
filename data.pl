@@ -1,7 +1,7 @@
 % CPSC 312 Project
 % Task Scheduler
 % Brendan Woodward, David Liu, Jack Heidal
-:- include('datetime.pl')
+:- include('datetime.pl').
 :- use_module(library(csv)).
 :- dynamic task/1, due/3, duration/2, prequisite/2, available/2, event/1, start/2, end/2, planstart/1, planend/1.
 

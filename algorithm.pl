@@ -70,7 +70,8 @@ createSlotsWrapper :-
     retractall(slot(_,_)),
     findall(available(X, Y), available(X, Y), Availables),
     createSlots(Availables, Slots),
-    maplist(assert, Slots).
+    filterEvents(Slots, FSlots),
+    maplist(assert, FSlots).
 
 createSlots([],[]).
 createSlots([available(Date, Range)|Availables], AllSlots) :-
@@ -91,13 +92,14 @@ splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
 		timeAfterX(Start, E15, 30).
 
 %filters out slots that are during events
+filterEvents([],[]).
 filterEvents([slot(Date, range(S, E))|Slots], [slot(Date, range(S, E))|FSlots]) :-
-		\+ duringEvent(S),
+		\+ duringEvent(Date, S),
 		filterEvents(Slots, FSlots).
 filterEvents([slot(Date, range(S, E))|Slots], FSlots) :-
-		duringEvent(S),
+		duringEvent(Date, S),
 		filterEvents(Slots, FSlots).
 
-duringEvent(Time) :-
-		event(Date, Range),
-		betweenTime(Range, Time).
+duringEvent(Date, Time) :-
+		event(Name, Date, Range),
+		betweenTimeNE(Range, Time).

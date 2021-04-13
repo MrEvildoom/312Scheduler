@@ -217,7 +217,7 @@ betweenTime(range(S, E), Time) :-
 	beforeTime(Time, E).
 
 %betweenTimeNE(range(S, E), Time) if true if Time is in the range(S, E) not including the end time
-betweenTimeNE(range(S, Time), Time).
+betweenTimeNE(range(Time, E), Time).
 betweenTimeNE(range(S, E), Time) :-
 	beforeTime(S, Time),
 	beforeTime(Time, E).
