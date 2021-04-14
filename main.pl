@@ -2,8 +2,8 @@
 
 mainf :-
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),
-    read_sq(Ready1),
-    catch(load, Err, recoverLoad),
+    read_sq(_),
+    catch(load,_, recoverLoad),
     %askForInfo,
     write('Creating a schedule for you...\n'), flush_output(current_output),
     assertSchedule, % not sure if this is the start of the algorithm
@@ -14,8 +14,8 @@ mainf :-
 recoverLoad :-
     write('One of the given profile, tasks file, or busy times file is invalid\n'), flush_output(current_output),
     write('Please upload a valid file for each 3! Press Enter when you are ready.\n'), flush_output(current_output),
-    read_sq(Ready),
-    catch(load, Err,  recoverLoad).
+    read_sq(_),
+    catch(load,_,  recoverLoad).
 
 askForInfo :-
     write('Would you like to know some info about your profile? (y/n) \n'), flush_output(current_output),
@@ -37,13 +37,15 @@ processQuestions(y) :-
 
 executeChosenMethod('1') :-
     write('You have chosen: Which tasks take at least X hours? \n'), flush_output(current_output),
-    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output).
-    read_sq(MinLength).
+    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
+    read_sq(MinLength),
+    placeholder(MinLength).
 
 executeChosenMethod('2') :-
     write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
-    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output).
-    read_sq(ChosenDate).
+    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
+    read_sq(ChosenDate),
+    placeholder(ChosenDate).
 
   
   %cd desktop/CPSC312/312Scheduler
