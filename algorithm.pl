@@ -2,7 +2,7 @@
 
 :- include('data.pl').
 :- use_module(set).
-:- dynamic slot/2.
+:- dynamic slot/2, assigned/2.
 
 assertSchedule :-
 		schedule_list(SL),
