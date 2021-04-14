@@ -2,13 +2,13 @@
 
 mainf :-
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),
-    read_sq(_),
-    catch(load,_, recoverLoad),
-    %askForInfo,
+    read_sq(Ready1),
+    catch(load, Err, recoverLoad),
+    askForInfo,
     write('Creating a schedule for you...\n'), flush_output(current_output),
     createSlotsWrapper, % not sure if this is the start of the algorithm
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
-    writeToCSV, %- wait for jack to create correct assertions for assignments.
+    write. %- wait for jack to create correct assertions for assignments.
     write('Schedule written to output.csv!\n'), flush_output(current_output).
 
 recoverLoad :-
