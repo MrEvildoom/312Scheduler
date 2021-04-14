@@ -1,12 +1,12 @@
-%:- module(algorithm, [schedule_list/1]).
+:- module(algorithm, [schedule_list/1]).
 
 :- include('data.pl').
 :- use_module(set).
 :- dynamic slot/2, assigned/2.
 
 assertSchedule :-
-		schedule_list(SL),
-        assertFacts(SL).
+		assertFacts(SL),
+		schedule_list(SL).
 
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,
@@ -30,7 +30,7 @@ assign_slots_wrapper(Tasks, Tasklist) :-
     assign_slots(Tasks, Tasklist, _).
 
 assign_slots([],[], empty).
-assign_slots([H_task|T_task], [assigned(H_task,slot(D,R))|T_Assigned], New_Set) :-
+assign_slots([H_Task|T_task], [assigned(H_Task,slot(D,R))|T_Assigned], New_Set) :-
     assign_slots(T_task, T_Assigned, Set),
     slot(D,R),
     before_due(H_Task, slot(D,R)),
@@ -92,10 +92,10 @@ splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
 %filters out slots that are during events
 filterEvents([],[]).
 filterEvents([slot(Date, range(S, E))|Slots], [slot(Date, range(S, E))|FSlots]) :-
-		\+ duringEvent(Date, S, Name),
+		\+ duringEvent(Date, S,_),
 		filterEvents(Slots, FSlots).
-filterEvents([slot(Date, range(S, E))|Slots], FSlots) :-
-		duringEvent(Date, S, Name),
+filterEvents([slot(Date, range(S,_))|Slots], FSlots) :-
+		duringEvent(Date, S,_),
         %assert(assigned(Name, slot(Date, range(S, E)))),
 		filterEvents(Slots, FSlots).
 
