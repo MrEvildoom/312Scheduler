@@ -1,5 +1,5 @@
 %% File to write the schedule results to a CSV file %%
-:- use_module(algorithm).
+:- include('algorithm.pl').
 
 % assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
 
@@ -135,7 +135,7 @@ createTaskList(Time, Date, [TName|Tasks]) :-
 	createTaskList(Time, Date2, Tasks).
 
 %writes results to CSV file
-write :-
+writeToCSV :-
 	createCellsWrapper,
 	createAllRows(Rows),
 	csv_write_file("output.csv", Rows).
