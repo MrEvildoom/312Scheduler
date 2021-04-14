@@ -65,7 +65,8 @@ createSlotsWrapper :-
     retractall(slot(_,_)),
     findall(available(X, Y), available(X, Y), Availables),
     createSlots(Availables, Slots),
-    maplist(assert, Slots).
+    filterEvents(Slots, FSlots),
+    maplist(assert, FSlots).
 
 createSlots([],[]).
 createSlots([available(Date, Range)|Availables], AllSlots) :-
@@ -85,7 +86,19 @@ splitTimeH(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
 splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
 		timeAfterX(Start, E15, 30).
 
-%%% Helper functions %%%
+%filters out slots that are during events
+filterEvents([],[]).
+filterEvents([slot(Date, range(S, E))|Slots], [slot(Date, range(S, E))|FSlots]) :-
+		\+ duringEvent(Date, S, Name),
+		filterEvents(Slots, FSlots).
+filterEvents([slot(Date, range(S, E))|Slots], FSlots) :-
+		duringEvent(Date, S, Name),
+        %assert(assigned(Name, slot(Date, range(S, E)))),
+		filterEvents(Slots, FSlots).
+
+duringEvent(Date, Time, Name) :-
+		event(Name, Date, Range),
+		betweenTimeNE(Range, Time).
 
 % replicate(Elem, Int, List) is true if List is a list of Int Elems.
 replicate(_,0,[]).
