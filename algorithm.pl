@@ -4,7 +4,9 @@
 :- use_module(set).
 :- dynamic slot/2.
 
-
+assertSchedule :-
+		assertFacts(SL),
+		schedule_list(SL).
 
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,
@@ -21,8 +23,9 @@ subdivide_tasks([H|T], Result) :-
     subdivide_tasks(T, T_Blocks),
     append(H_Blocks, T_Blocks, Result).
 
-% assigned_slots_wrapper(Tasks, Tasklist) is true if Tasklist is a list of assigned(task, slot),
+% assign_slots_wrapper(Tasks, Tasklist) is true if Tasklist is a list of assigned(task, slot),
 % with a task for every element in Tasks and no repeated slots
+% remove this since it's a 1-liner
 assign_slots_wrapper(Tasks, Tasklist) :-
     assign_slots(Tasks, Tasklist, _).
 
