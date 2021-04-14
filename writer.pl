@@ -1,5 +1,5 @@
 %% File to write the schedule results to a CSV file %%
-:- include('algorithm.pl').
+:- use_module(algorithm).
 
 % assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
 
