@@ -61,14 +61,14 @@ createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PR
 
 % createProfile iterates through the profile and formats them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
 createProfile([],[]).
-createProfile([avail(Date, Day, Times)|Dates], Facts) :-
+createProfile([avail(Date,_, Times)|Dates], Facts) :-
     atomic_list_concat(TList, ',', Times),
     convertTimeRange(TList, AvailRanges),
     convertDate(Date, NewDate),
     createAvails(NewDate, AvailRanges, FactR),
     createProfile(Dates, RestF),
     append(FactR, RestF, Facts).
-createProfile([avail(Date, Day, '')|Dates], Facts) :-
+createProfile([avail(_,_,'')|Dates], Facts) :-
     createProfile(Dates, Facts).
 
 % createAvails itearates through ranges for a data and creates all facts for that date ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
@@ -122,7 +122,7 @@ read_sq(SQ) :-
 % from https://stackoverflow.com/questions/36797007/output-any-string-input-with-prolog
 read_line(String) :-
     current_input(Input),
-    read_string(Input, '\n', '\r', End, String).
+    read_string(Input, '\n', '\r',_, String).
 
 % reads the top 2 rows of a CSV File
 readTop2(File, Row1, Row2) :-

@@ -1,5 +1,5 @@
 %% File to write the schedule results to a CSV file %%
-:- include('algorithm.pl').
+:- use_module(algorithm).
 
 % assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
 
@@ -28,15 +28,15 @@ createCellsHelper(Time, Date, [cell(TName, Date, range(Time, End))|Cells]) :-
 
 createCellsHelper(Time, Date, [cell('', Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
-	\+ assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
-	\+ duringEvent(Date, Time, EName),
+	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
+	\+ duringEvent(Date, Time,_),
 	%assert(cell('', Date, range(Time, End))),
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
 createCellsHelper(Time, Date, [cell(EName, Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
-	\+ assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
+	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
 	duringEvent(Date, Time, EName),
 	%assert(cell('', Date, range(Time, End))),
 	timeAfter30(Time, T30),
@@ -47,12 +47,12 @@ createCellsHelper(pm(11,30), Date, [cell(TName, Date, range(pm(11,30), End))]) :
 	%assert(cell(TName, Date, range(pm(11,30), End))).
 
 createCellsHelper(pm(11,30), Date, [cell('', Date, range(pm(11,30), End))]) :-
-	\+ assigned(TName, slot(Date, range(pm(11,30), End))),
-	\+ duringEvent(Date, pm(11,30), EName).
+	\+ assigned(_, slot(Date, range(pm(11,30), End))),
+	\+ duringEvent(Date, pm(11,30),_).
 	%assert(cell('', Date, range(pm(11,30), End))).
 
 createCellsHelper(pm(11,30), Date, [cell(EName, Date, range(pm(11,30), End))]) :-
-	\+ assigned(TName, slot(Date, range(pm(11,30), End))),
+	\+ assigned(_, slot(Date, range(pm(11,30), End))),
 	duringEvent(Date, pm(11,30), EName).
 
 % gets plan dates converted to SQ
@@ -126,10 +126,10 @@ createTaskRow(Time, Tasks, FactRow) :-
 
 % creates a list of tasks on a given time cycling through all dates (until planend)
 createTaskList(Time, Date, [TName]) :- 
-	cell(TName, Date, range(Time, End)),
+	cell(TName, Date, range(Time,_)),
 	planend(Date).
 createTaskList(Time, Date, [TName|Tasks]) :-
-	cell(TName, Date, range(Time, End)),
+	cell(TName, Date, range(Time,_)),
 	\+ planend(Date),
 	nextDay(Date, Date2),
 	createTaskList(Time, Date2, Tasks).
