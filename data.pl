@@ -59,16 +59,16 @@ createTasks([task(Name, Date, Time, Dur, Pre)|Tasks], [NFact, DTFact, DRFact, PR
     PRFact =.. ['prequisite', Name, Pre],
     createTasks(Tasks, Facts).
 
-% createProfile iterates through the profile and foramts them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
+% createProfile iterates through the profile and formats them into propper facts ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
 createProfile([],[]).
-createProfile([avail(Date, Day, Times)|Dates], Facts) :-
+createProfile([avail(Date,_, Times)|Dates], Facts) :-
     atomic_list_concat(TList, ',', Times),
     convertTimeRange(TList, AvailRanges),
     convertDate(Date, NewDate),
     createAvails(NewDate, AvailRanges, FactR),
     createProfile(Dates, RestF),
     append(FactR, RestF, Facts).
-createProfile([avail(Date, Day, '')|Dates], Facts) :-
+createProfile([avail(_,_,'')|Dates], Facts) :-
     createProfile(Dates, Facts).
 
 % createAvails itearates through ranges for a data and creates all facts for that date ie. available(date(20, 04, 2021), range(am(10,00), pm(2,5)))
@@ -87,13 +87,11 @@ convertTimeRange([TimeR|Times], [range(StartTime, EndTime)|ListRange]) :-
 
 % createEvents iterates through the events and formats them into propper facts ie. start('Practice', date(04, 12, 2021), pm(4, 45))
 createEvents([],[]).
-createEvents([event(Name, Date, Start, End)|Events], [NFact, SFact, EFact|Facts]) :-
-    NFact =.. ['event', Name],
+createEvents([event(Name, Date, Start, End)|Events], [NFact|Facts]) :-
+    NFact =.. ['event', Name, NewDate, range(NewStart, NewEnd)],
     convertDate(Date, NewDate),
     convertTime(Start, NewStart),
     convertTime(End, NewEnd),
-    SFact =.. ['start', NewDate, NewStart],
-    EFact =.. ['end', NewDate, NewEnd],
     createEvents(Events, Facts).
 
 % createStartEnd creates facts for the start and end of the plan
@@ -106,7 +104,7 @@ createStartEnd(row(_,'Start', StDate), row(_, 'End', EnDate), [StartF, EndF]) :-
 retractFacts :-
     retractall(task(_)), retractall(due(_,_,_)), retractall(duration(_,_)), retractall(prequisite(_,_)),
     retractall(available(_,_)), retractall(planstart(_)), retractall(planend(_)),
-    retractall(event(_)), retractall(start(_,_)), retractall(end(_,_)).
+    retractall(event(_,_,_)).
     
 
 % assertFacts iterates through a list of facts and asserts them
@@ -124,7 +122,7 @@ read_sq(SQ) :-
 % from https://stackoverflow.com/questions/36797007/output-any-string-input-with-prolog
 read_line(String) :-
     current_input(Input),
-    read_string(Input, '\n', '\r', End, String).
+    read_string(Input, '\n', '\r',_, String).
 
 % reads the top 2 rows of a CSV File
 readTop2(File, Row1, Row2) :-
