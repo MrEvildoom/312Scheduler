@@ -1,4 +1,4 @@
-:- module(algorithm, [schedule_list/1]).
+:- module(algorithm, [assertSchedule/1]).
 
 :- include('data.pl').
 :- use_module(set).
