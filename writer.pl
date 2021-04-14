@@ -135,7 +135,7 @@ createTaskList(Time, Date, [TName|Tasks]) :-
 	createTaskList(Time, Date2, Tasks).
 
 %writes results to CSV file
-writeToCSV :-
+write :-
 	createCellsWrapper,
 	createAllRows(Rows),
 	csv_write_file("output.csv", Rows).
