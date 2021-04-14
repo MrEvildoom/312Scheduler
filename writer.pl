@@ -2,7 +2,7 @@
 % Some simple Prolog examples. In public domain.
 % :- include('Schedule.pl').
 :- include('algorithm.pl').
-:- use_module(library(csv)).
+:- use_module(library(csv), algorithm).
 
 % To load in Prolog, at the ?- prompt:
 % swipl
@@ -27,7 +27,10 @@
     %maplist(map_item, Data, Rows),
 %    csv_write_file(File, Data, [separator(0',)]).
 
-assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
+% assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
+
+% command to test loading, scheduling and writing the test schedule to CSV.
+do_the_thing :- auto_load, schedule_list(X), assertFacts(X), writeToCSV. 
 
 % if asssigned slots are stored in KB like: assigned(TName, slot(Date, Range)) then to make all cells in output:
 % create cells asserts in KB cell(TName, Slot), where TName is the task name assigned to Slot or '' if no task assigned
