@@ -75,7 +75,7 @@ i_sort([],Acc,Acc).
 i_sort([H|T],Acc,Sorted):-insert(H,Acc,NAcc),i_sort(T,NAcc,Sorted).
 
 insert(assigned(X,XS),[assigned(Y,YS)|T],[assigned(Y,YS)|NT]) :- 
-    before_slot(Y,X),insert(X,T,NT).
+    before_slot(Y,X),insert(assigned(X,XS),T,NT).
 insert(assigned(X,XS),[assigned(Y,YS)|T],[assigned(X,XS),assigned(Y,YS)|T]) :- 
     before_slot(X,Y).
 insert(X,[],[X]).
