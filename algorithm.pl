@@ -1,12 +1,10 @@
-:- module(algorithm, [schedule_list/1]).
-
 :- include('data.pl').
 :- use_module(set).
 :- dynamic slot/2, assigned/2.
 
 assertSchedule :-
-		assertFacts(SL),
-		schedule_list(SL).
+		schedule_list(SL),
+        assertFacts(SL).
 
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,

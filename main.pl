@@ -6,9 +6,13 @@ mainf :-
     catch(load, Err, recoverLoad),
     askForInfo,
     write('Creating a schedule for you...\n'), flush_output(current_output),
+<<<<<<< HEAD
     createSlotsWrapper, % not sure if this is the start of the algorithm
+=======
+    assertSchedule, %assertSchedule, % not sure if this is the start of the algorithm
+>>>>>>> a5135c2fef4c7d2f399c51cdef669be19ab42e72
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
-    write. %- wait for jack to create correct assertions for assignments.
+    writeToCSV, %- wait for jack to create correct assertions for assignments.
     write('Schedule written to output.csv!\n'), flush_output(current_output).
 
 recoverLoad :-
