@@ -18,7 +18,7 @@ recoverLoad :-
     catch(load,_,  recoverLoad).
 
 askForInfo :-
-    write('Would you like to know some info about your profile? (y/n) \n'), flush_output(current_output),
+    write('Would you like to know some more info about your profile? (y/n) \n'), flush_output(current_output),
     read_sq(YesOrNo),
     checkYes(YesOrNo) -> processQuestions(YesOrNo); 
                     (write('Invalid response. Please answer either yes (y) or no (n) '), askForInfo).
@@ -38,20 +38,24 @@ processQuestions(y) :-
     write('(6) What days am I available at time X? \n'), flush_output(current_output),
     write('(7) Which tasks have a prerequisite? \n'), flush_output(current_output),
     write('(8) What is my shortest task? \n'), flush_output(current_output),            %done
-    write('(9) When am I available on X date? \n'), flush_output(current_output),       %done
+    write('(9) What is my longest task? \n'), flush_output(current_output),       %done
     read_sq(ChosenOption),
     executeChosenMethod(ChosenOption) -> true;
-                                        (write('Please choose an option from 1-9. \n'), processQuestions(y)).
+                                        (write('Please choose an option from 1-9 or x. \n'), processQuestions(y)).
 
 %Can't figure out 1-3
 executeChosenMethod('1') :-
     write('Which tasks take at least X hours? \n'), flush_output(current_output),
-    write('Please provide the date to find periods of availability. \n'), flush_output(current_output).
+    write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
+    askForInfo.
     
+%Can't figure out 1-3
 executeChosenMethod('2') :-
     write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
-    write('Please provide the date to find periods of availability. \n'), flush_output(current_output).
+    write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
+    askForInfo.
 
+%Can't figure out 1-3
 executeChosenMethod('3') :-
     write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
     write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
@@ -61,9 +65,9 @@ executeChosenMethod('3') :-
 
 executeChosenMethod('4') :-
     write('You have chosen: Which tasks require X hours or more? \n'), flush_output(current_output),
-    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output), write('test'),
+    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
     read_sq(MinLength),
-    atom_number(MinLength, ConvertedMinLength) -> findTasksOfMinLength(ConvertedMinLength);
+    atom_number(MinLength, ConvertedMinLength) -> (findTasksOfMinLength(ConvertedMinLength), askForInfo);
                                             (write('Non-numerical value given. Please give a numerical value.\n'), executeChosenMethod('4')).
 
 findTasksOfMinLength(X) :-
@@ -76,7 +80,7 @@ executeChosenMethod('5') :-
     write('You have chosen: What task(s) are due on day X? \n'), flush_output(current_output),
     write('Please give a day input of the form MM/DD/YYYY \n'), flush_output(current_output),
     read_sq(GivenDate),
-    convertDate(GivenDate, ConvertedDate) -> findTasksDueOnDay(ConvertedDate);
+    convertDate(GivenDate, ConvertedDate) -> (findTasksDueOnDay(ConvertedDate), askForInfo);
                                             (write('Incorrect format given.\n'), executeChosenMethod('5')).
 
 findTasksDueOnDay(ConvertedDate) :-
@@ -92,12 +96,14 @@ executeChosenMethod('6') :-
 executeChosenMethod('7') :-
     write('You have chosen: Which tasks have a prerequisite? \n'), flush_output(current_output),
     write('Tasks with a prerequisite \n'), flush_output(current_output),
-    writeResultList(ResultTasks).
+    writeResultList(ResultTasks),
+    askForInfo.
 
 executeChosenMethod('8') :-
     write('You have chosen: What is my shortest task? \n'), flush_output(current_output),
     findall(duration(Name, TaskLength), duration(Name, TaskLength), [D1|Rest]),
-    findShortestTask(Rest, D1).
+    findShortestTask(Rest, D1),
+    askForInfo.
 
 findShortestTask([], duration(Name, Length)) :-
     write('Your shortest task is: '), flush_output(current_output),
@@ -115,7 +121,8 @@ findShortestTask([duration(Name, TaskLength)|Rest], duration(Name1, TaskLength1)
 executeChosenMethod('9') :-
     write('You have chosen: What is my longest task? \n'), flush_output(current_output),
     findall(duration(Name, TaskLength), duration(Name, TaskLength), [D1|Rest]),
-    findLongestTask(Rest, D1).
+    findLongestTask(Rest, D1),
+    askForInfo.
 
 findLongestTask([duration(Name, TaskLength)|Rest], duration(Name1, TaskLength1)) :-
     TaskLength1 > TaskLength -> findLongestTask(Rest, duration(Name1, TaskLength1));
