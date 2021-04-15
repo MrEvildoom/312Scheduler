@@ -46,9 +46,11 @@ processQuestions(y) :-
 %TODO add loop if wrong input
 executeChosenMethod('1') :-
     write('Number of hours: '), flush_output(current_output),
-    read_term(Hrs), getTasksDur(Hrs, Tasks), makeTDurs(Tasks, Msg),
-    write(Msg),  flush_output(current_output),
-    askForInfo.
+    read_term(Hrs), 
+    number(Hrs) -> (getTasksDur(Hrs, Tasks),
+    makeTDurs(Tasks, Msg), write(Msg),  flush_output(current_output), askForInfo) ;
+    (write('Invalid input, please try again.\n'), 
+    flush_output(current_output), executeChosenMethod('1')).
 
 makeTDurs([],'').
 makeTDurs([duration(TN, D)|Durs], NewRes) :-
