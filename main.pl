@@ -43,7 +43,6 @@ processQuestions(y) :-
     executeChosenMethod(ChosenOption) -> true;
                                         (write('Please choose an option from 1-9 or x. \n'), processQuestions(y)).
 
-%TODO add loop if wrong input
 executeChosenMethod('1') :-
     write('Number of hours: '), flush_output(current_output),
     read_term(Hrs), 
@@ -73,13 +72,17 @@ compareD(Dur, Hrs) :-
     term_to_atom(TD, Dur),
     TD >= Hrs.
 
-%TODO add loop if wrong input and edit if time
+%TODO edit if time
 executeChosenMethod('2') :-
     write('Task Name: '), flush_output(current_output),
     read_sq(TName),
-    makeTaskInfo(TName, Msg),
-    write(Msg),  flush_output(current_output),
-    askForInfo.
+    makeTaskInfo(TName, Msg) ->
+    (write(Msg),  flush_output(current_output),
+    % write('do you want to edit this task?'),  flush_output(current_output),
+    % read_sq(YorN), editTask(TName, YorN),
+     askForInfo);
+    (write('Task does not exist please try again.\n'), 
+    flush_output(current_output), executeChosenMethod('2')).
 
 makeTaskInfo(TName, Msg) :-
     task(TName), due(TName, Date, Time), 
@@ -87,16 +90,20 @@ makeTaskInfo(TName, Msg) :-
     convertDate(SQDD, Date), timeConvert(Time, CT),
     concatAtomList(['Task Name: ', TName, '\nDue Date: ', SQDD, ', ', CT, '\nDuration : ', Dur, ' hours\n', 'Prerequisite: ', Pre, '\n'], Msg).
 
+% editTask(_, 'n').
+% editTask(TName, 'y') :-
+%     write('what do you want to edit?\n 1. Name\n 2. Due Date\n 3. Due Time \n 4.Duration\n 5. Prerequisite'), flush_output(current_output).
+
 %TODO add loop if wrong input and edit if time
 executeChosenMethod('3') :-
-    write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
-    write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
+    write('Date (MM/DD/YYYY): '), flush_output(current_output),
     read_sq(ChosenDate),
-    convertDate(ChosenDate, CD),
-    findall(R, available(CD, R), Ranges), makeRangesInfo(Ranges, Msg),
-    write(Msg),  flush_output(current_output).
-    %convertDate(ChosenDate, ConvertedDate) -> testDateConvert(ConvertedDate);
-    %                                        (write('Non-numerical value given. Please give a numerical value.\n'), executeChosenMethod('3')).
+    convertDate(ChosenDate, CD) ->
+    (findall(R, available(CD, R), Ranges), makeRangesInfo(Ranges, Msg),
+    write(Msg),  flush_output(current_output));
+    (write('Invalid input, please try again.\n'), 
+    flush_output(current_output), executeChosenMethod('3')).
+
 makeRangesInfo([], '').
 makeRangesInfo([range(S, E)|Ranges], NewRes) :-
     makeRangesInfo(Ranges, Res),
