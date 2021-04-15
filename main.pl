@@ -32,7 +32,7 @@ processQuestions(y) :-
     write('What would you like to know?\n'), flush_output(current_output),
     write('(1) Which tasks take at least X hours? \n'), flush_output(current_output), %done B
     write('(2) Show me info for task X \n'), flush_output(current_output), %done B
-    write('(3) When am I available on X date? \n'), flush_output(current_output),
+    write('(3) When am I available on X date? \n'), flush_output(current_output), %done B
     write('(4) Which tasks require X hours or more? \n'), flush_output(current_output), %done
     write('(5) What task(s) are due on day X \n'), flush_output(current_output),        %done
     write('(6) What days am I available at time X? \n'), flush_output(current_output),
@@ -43,7 +43,7 @@ processQuestions(y) :-
     executeChosenMethod(ChosenOption) -> true;
                                         (write('Please choose an option from 1-9 or x. \n'), processQuestions(y)).
 
-%Can't figure out 1-3
+%TODO add loop if wrong input
 executeChosenMethod('1') :-
     write('Number of hours: '), flush_output(current_output),
     read_term(Hrs), getTasksDur(Hrs, Tasks), makeTDurs(Tasks, Msg),
@@ -71,7 +71,7 @@ compareD(Dur, Hrs) :-
     term_to_atom(TD, Dur),
     TD >= Hrs.
 
-%Can't figure out 1-3
+%TODO add loop if wrong input and edit if time
 executeChosenMethod('2') :-
     write('Task Name: '), flush_output(current_output),
     read_sq(TName),
@@ -85,13 +85,21 @@ makeTaskInfo(TName, Msg) :-
     convertDate(SQDD, Date), timeConvert(Time, CT),
     concatAtomList(['Task Name: ', TName, '\nDue Date: ', SQDD, ', ', CT, '\nDuration : ', Dur, ' hours\n', 'Prerequisite: ', Pre, '\n'], Msg).
 
-%Can't figure out 1-3
+%TODO add loop if wrong input and edit if time
 executeChosenMethod('3') :-
     write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
     write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
     read_sq(ChosenDate),
-    convertDate(ChosenDate, ConvertedDate) -> testDateConvert(ConvertedDate);
-                                            (write('Non-numerical value given. Please give a numerical value.\n'), executeChosenMethod('3')).
+    convertDate(ChosenDate, CD),
+    findall(R, available(CD, R), Ranges), makeRangesInfo(Ranges, Msg),
+    write(Msg),  flush_output(current_output).
+    %convertDate(ChosenDate, ConvertedDate) -> testDateConvert(ConvertedDate);
+    %                                        (write('Non-numerical value given. Please give a numerical value.\n'), executeChosenMethod('3')).
+makeRangesInfo([], '').
+makeRangesInfo([range(S, E)|Ranges], NewRes) :-
+    makeRangesInfo(Ranges, Res),
+    timeConvert(S, St), timeConvert(E, End),
+    concatAtomList([St, ' - ', End, '\n', Res], NewRes).
 
 executeChosenMethod('4') :-
     write('You have chosen: Which tasks require X hours or more? \n'), flush_output(current_output),
