@@ -16,7 +16,7 @@ convertTime(Time, pm(NH, MM)) :-
 convertTime(Time, pm(12, MM)) :-
     term_to_atom(12:MM, Time).
 
-% converts an am/pm time into a single quote time.  only work going from 'HH:MM' to am(HH, MM)
+% converts an am/pm time into a single quote time.  only work going from am(HH, MM) to 'HH:MM' 
 timeConvert(am(H, M), Time) :-
     term_to_atom(H:M, Time),
     H < 12.

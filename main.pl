@@ -6,9 +6,9 @@ mainf :-
     catch(load, Err, recoverLoad),
     askForInfo,
     write('Creating a schedule for you...\n'), flush_output(current_output),
-    assertSchedule, %assertSchedule, % not sure if this is the start of the algorithm
+    assertSchedule,
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
-    writeToCSV, %- wait for jack to create correct assertions for assignments.
+    writeToCSV,
     write('Schedule written to output.csv!\n'), flush_output(current_output).
 
 recoverLoad :-
@@ -30,8 +30,8 @@ processQuestions(n) :-
     write('Understood. Moving forward to create a schedule.\n'), flush_output(current_output).
 processQuestions(y) :-
     write('What would you like to know?\n'), flush_output(current_output),
-    write('(1) Which tasks take at least X hours? \n'), flush_output(current_output),
-    write('(2) Show me info for task X \n'), flush_output(current_output),
+    write('(1) Which tasks take at least X hours? \n'), flush_output(current_output), %done B
+    write('(2) Show me info for task X \n'), flush_output(current_output), %done B
     write('(3) When am I available on X date? \n'), flush_output(current_output),
     write('(4) Which tasks require X hours or more? \n'), flush_output(current_output), %done
     write('(5) What task(s) are due on day X \n'), flush_output(current_output),        %done
@@ -45,15 +45,45 @@ processQuestions(y) :-
 
 %Can't figure out 1-3
 executeChosenMethod('1') :-
-    write('Which tasks take at least X hours? \n'), flush_output(current_output),
-    write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
+    write('Number of hours: '), flush_output(current_output),
+    read_term(Hrs), getTasksDur(Hrs, Tasks), makeTDurs(Tasks, Msg),
+    write(Msg),  flush_output(current_output),
     askForInfo.
-    
+
+makeTDurs([],'').
+makeTDurs([duration(TN, D)|Durs], NewRes) :-
+    makeTDurs(Durs, Res),
+    concatAtomList(['Task Name: ', TN, ', Duration: ', D, '\n', Res], NewRes).
+
+getTasksDur(Hrs, DTasks) :-
+    findall(duration(TName, Dur), duration(TName, Dur), Tasks),
+    filterTDurs(Hrs, Tasks, DTasks).
+
+filterTDurs(_,[],[]).
+filterTDurs(Hrs, [duration(_, D)|Tasks], Res) :-
+    \+ compareD(D, Hrs),
+    filterTDurs(Hrs, Tasks, Res).
+filterTDurs(Hrs, [duration(H, D)|Tasks], [duration(H, D)|Res]) :-
+    compareD(D, Hrs),
+    filterTDurs(Hrs, Tasks, Res).
+
+compareD(Dur, Hrs) :-
+    term_to_atom(TD, Dur),
+    TD >= Hrs.
+
 %Can't figure out 1-3
 executeChosenMethod('2') :-
-    write('You have chosen: When am I available on X date? \n'), flush_output(current_output),
-    write('Please provide the date to find periods of availability. \n'), flush_output(current_output),
+    write('Task Name: '), flush_output(current_output),
+    read_sq(TName),
+    makeTaskInfo(TName, Msg),
+    write(Msg),  flush_output(current_output),
     askForInfo.
+
+makeTaskInfo(TName, Msg) :-
+    task(TName), due(TName, Date, Time), 
+    duration(TName, Dur), prequisite(TName, Pre),
+    convertDate(SQDD, Date), timeConvert(Time, CT),
+    concatAtomList(['Task Name: ', TName, '\nDue Date: ', SQDD, ', ', CT, '\nDuration : ', Dur, ' hours\n', 'Prerequisite: ', Pre, '\n'], Msg).
 
 %Can't figure out 1-3
 executeChosenMethod('3') :-
