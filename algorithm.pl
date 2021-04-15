@@ -9,8 +9,9 @@ assertSchedule :-
 schedule_list(Ordered_List) :-
     createSlotsWrapper,
     findall(X, task(X), Tasks),
-    subdivide_tasks(Tasks, Block_List),
-    assign_slots_wrapper(Block_List, Scheduled_List),
+    % subdivide_tasks(Tasks, Block_List),
+    % assign_slots_wrapper(Block_List, Scheduled_List),
+    assign_slots_wrapper(Tasks, Scheduled_List),
     insert_sort(Scheduled_List, Ordered_List),
     prereq_satisfied_wrapper(Ordered_List),
     ensure_breaks(Ordered_List).
@@ -42,7 +43,7 @@ assign_slots([H_Task|T_task], [assigned(H_Task,slot(D,R))|T_Assigned], New_Set) 
 % before_due is true if Date and End are before Task's due date
 before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
-    (Date = Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
+    (Date == Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
 
 
