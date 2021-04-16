@@ -1,8 +1,8 @@
 Task Name,Date Due (MM/DD/YYYY),Time Due (24hr),Task Length (hours),Prerequisites
 CPSC 312 Final,4/19/2021,8:30,10,CPSC 312 Demo
 CPSC 312 Demo,4/16/2021,16:30,7,
-CPSC 213 Assn,4/16/2021,23:59,5,
 CPSC 213 Final,4/18/2021,12:00,7,CPSC 213 Assn
-Clean House,4/20/2021,16:00,2,
-COMM 449 Case,4/22/2021,23:00,6,
+CPSC 213 Assn,4/16/2021,23:59,5,
 Set up furniture,4/21/2021,12:00,2,Clean House
+COMM 449 Case,4/22/2021,23:00,6,
+Clean House,4/20/2021,16:00,2,

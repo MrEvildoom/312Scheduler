@@ -2,48 +2,48 @@
 0:0,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
 0:30,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
 1:0,X,X,X,X,X,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,X
-1:30,X,Clean House,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
-2:0,X,Clean House,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
-2:30,X,Clean House,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
-3:0,X,Clean House,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
-3:30,X,,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
+1:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
+2:0,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
+2:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
+3:0,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
+3:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
 4:0,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
 4:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
 5:0,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
 5:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
-6:0,X,,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
+6:0,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
 6:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,,X,X
 7:0,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,X,X,X,,X,X,X,,X,X
 7:30,X,CPSC 312 Project,X,X,X,X,X,,X,X,X,X,X,X,X,X,,X,X,X,,X,X
 8:0,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
 8:30,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
-9:0,X,X,X,X,CPSC 312 Project,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
-9:30,X,X,X,X,CPSC 312 Project,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
-10:0,Quiz,X,X,X,CPSC 312 Project,X,CPSC 312 Final,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
-10:30,Quiz,X,X,X,CPSC 312 Project,X,CPSC 312 Final,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
-11:0,Quiz,X,X,X,,X,CPSC 312 Final,Class,X,X,X,X,,X,X,,X,X,X,X,X,X,
-11:30,Quiz,X,X,X,CPSC 312 Project,X,CPSC 312 Final,Class,X,X,X,X,,X,X,,X,X,X,X,X,X,
-12:0,,X,X,CPSC 312 Project,CPSC 312 Project,X,,X,X,,X,X,,X,X,,X,X,,X,X,X,
-12:30,Quiz,X,X,CPSC 312 Project,CPSC 312 Project,X,CPSC 312 Final,X,X,,X,X,,X,X,,X,X,,X,X,X,
-13:0,Quiz,X,X,CPSC 312 Project,CPSC 312 Final,X,CPSC 312 Final,X,X,,X,X,,X,X,,X,X,,X,X,X,
-13:30,Quiz,X,X,CPSC 312 Project,,X,CPSC 312 Final,X,X,,X,X,,X,X,,X,X,,X,X,X,
-14:0,Quiz,X,X,X,CPSC 312 Final,X,CPSC 312 Final,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
-14:30,,X,X,X,CPSC 312 Final,X,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
-15:0,Quiz,X,X,X,CPSC 312 Final,X,CPSC 312 Final,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
-15:30,Quiz,X,X,X,CPSC 312 Final,X,CPSC 312 Final,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
-16:0,Quiz,X,X,X,X,Practice,CPSC 312 Final,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
-16:30,Quiz,X,X,X,X,Practice,CPSC 312 Final,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
-17:0,,X,CPSC 312 Project,CPSC 312 Project,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
-17:30,Quiz,X,CPSC 312 Project,CPSC 312 Project,X,X,CPSC 312 Final,X,,,X,X,,X,X,,X,,,X,X,,
-18:0,Quiz,X,CPSC 312 Project,CPSC 312 Project,X,X,CPSC 312 Final,X,,,X,X,,X,X,,X,,,X,X,,
-18:30,Clean House,X,CPSC 312 Project,CPSC 312 Project,X,X,CPSC 312 Final,X,,,X,X,,X,X,,X,,,X,X,,
-19:0,Clean House,X,,,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
-19:30,,X,CPSC 312 Project,CPSC 312 Project,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
+9:0,X,X,X,X,CPSC 312 Final,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
+9:30,X,X,X,X,CPSC 312 Final,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X
+10:0,Quiz,X,X,X,CPSC 312 Final,X,CPSC 312 Final,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
+10:30,Quiz,X,X,X,CPSC 312 Final,X,CPSC 312 Final,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
+11:0,Quiz,X,X,X,CPSC 312 Final,X,CPSC 312 Final,Class,X,X,X,X,,X,X,,X,X,X,X,X,X,
+11:30,Quiz,X,X,X,CPSC 312 Final,X,,Class,X,X,X,X,,X,X,,X,X,X,X,X,X,
+12:0,Quiz,X,X,CPSC 312 Project,CPSC 312 Final,X,,X,X,,X,X,,X,X,,X,X,,X,X,X,
+12:30,Quiz,X,X,CPSC 312 Project,CPSC 312 Final,X,,X,X,,X,X,,X,X,,X,X,,X,X,X,
+13:0,Quiz,X,X,CPSC 312 Project,CPSC 312 Final,X,,X,X,,X,X,,X,X,,X,X,,X,X,X,
+13:30,Quiz,X,X,CPSC 312 Project,CPSC 312 Final,X,,X,X,,X,X,,X,X,,X,X,,X,X,X,
+14:0,Quiz,X,X,X,CPSC 312 Final,X,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
+14:30,Quiz,X,X,X,CPSC 312 Final,X,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
+15:0,Quiz,X,X,X,CPSC 312 Final,X,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
+15:30,Quiz,X,X,X,CPSC 312 Final,X,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
+16:0,Quiz,X,X,X,X,Practice,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
+16:30,Quiz,X,X,X,X,Practice,,X,X,X,X,X,,X,X,,X,X,X,X,X,X,
+17:0,Clean House,X,CPSC 312 Project,CPSC 312 Project,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
+17:30,Clean House,X,CPSC 312 Project,CPSC 312 Project,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
+18:0,Clean House,X,CPSC 312 Project,CPSC 312 Project,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
+18:30,Clean House,X,CPSC 312 Project,CPSC 312 Final,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
+19:0,Clean House,X,CPSC 312 Project,CPSC 312 Final,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
+19:30,Clean House,X,CPSC 312 Project,CPSC 312 Final,X,X,,X,,,X,X,,X,X,,X,,,X,X,,
 20:0,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,,X,X,,X,X,X,,,,X,,,
 20:30,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
 21:0,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
-21:30,X,CPSC 312 Project,,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
-22:0,X,,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
+21:30,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
+22:0,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
 22:30,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
 23:0,X,CPSC 312 Project,CPSC 312 Project,X,X,X,X,,,X,X,X,,X,X,X,,,X,X,,,
 23:30,,,,,,,,,,,,,,,,,,,,,,,
