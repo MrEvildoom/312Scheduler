@@ -9,14 +9,14 @@ assertSchedule :-
 schedule_list(Ordered_List) :-
     createSlotsWrapper,
     findall(X, task(X), Tasks),
-    % subdivide_tasks(Tasks, Block_List),
-    % assign_slots_wrapper(Block_List, Scheduled_List),
-    assign_slots_wrapper(Tasks, Scheduled_List),
+    subdivide_tasks(Tasks, Block_List),
+    assign_slots_wrapper(Block_List, Scheduled_List),
+    % assign_slots_wrapper(Tasks, Scheduled_List),
     insert_sort(Scheduled_List, Ordered_List),
-    prereq_satisfied_wrapper(Ordered_List),
-    ensure_breaks(Ordered_List).
+    prereq_satisfied_wrapper(Ordered_List).
+    % ensure_breaks(Ordered_List).
 
-
+% findall(X, task(X), Tasks), assign_slots_wrapper(Tasks, X), insert_sort(X,Y).
 
 % divides tasks into blocks of one hour
 subdivide_tasks([],[]).
@@ -76,9 +76,9 @@ i_sort([],Acc,Acc).
 i_sort([H|T],Acc,Sorted):-insert(H,Acc,NAcc),i_sort(T,NAcc,Sorted).
 
 insert(assigned(X,XS),[assigned(Y,YS)|T],[assigned(Y,YS)|NT]) :- 
-    before_slot(Y,X),insert(assigned(X,XS),T,NT).
+    before_slot(YS,XS),insert(assigned(X,XS),T,NT).
 insert(assigned(X,XS),[assigned(Y,YS)|T],[assigned(X,XS),assigned(Y,YS)|T]) :- 
-    before_slot(X,Y).
+    before_slot(XS,YS).
 insert(X,[],[X]).
 
 
