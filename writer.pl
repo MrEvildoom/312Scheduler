@@ -19,6 +19,8 @@ createCells(Date, AllCells) :-
 	append(Cells1, Cells, AllCells),
 	createCells(ND, Cells).
 
+
+%create cells where a task has been assigned
 createCellsHelper(Time, Date, [cell(TName, Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
 	assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
@@ -26,14 +28,28 @@ createCellsHelper(Time, Date, [cell(TName, Date, range(Time, End))|Cells]) :-
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
+% create cell when there is a slot available for work but no task has been assigned to that slot
 createCellsHelper(Time, Date, [cell('', Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
+	slot(Date, range(Time, End)),
 	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
 	\+ duringEvent(Date, Time,_),
 	%assert(cell('', Date, range(Time, End))),
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
+% create cells when no task has been assigned
+createCellsHelper(Time, Date, [cell('X', Date, range(Time, End))|Cells]) :-
+	beforeTime(Time, pm(11,30)),
+	\+ slot(Date, range(Time, End)),
+	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
+	% above is probably unnecessary, keeping it in to be safe 
+	\+ duringEvent(Date, Time,_),
+	%assert(cell('', Date, range(Time, End))),
+	timeAfter30(Time, T30),
+	createCellsHelper(T30, Date, Cells).
+
+% create cells when events have been scheduled
 createCellsHelper(Time, Date, [cell(EName, Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
 	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
@@ -42,15 +58,18 @@ createCellsHelper(Time, Date, [cell(EName, Date, range(Time, End))|Cells]) :-
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
+% create 11:30 - 12:00 cell if a task has been scheduled
 createCellsHelper(pm(11,30), Date, [cell(TName, Date, range(pm(11,30), End))]) :-
 	assigned(TName, slot(Date, range(pm(11,30), End))).
 	%assert(cell(TName, Date, range(pm(11,30), End))).
 
+% create 11:30 - 12:00 cell if no task scheduled
 createCellsHelper(pm(11,30), Date, [cell('', Date, range(pm(11,30), End))]) :-
 	\+ assigned(_, slot(Date, range(pm(11,30), End))),
 	\+ duringEvent(Date, pm(11,30),_).
 	%assert(cell('', Date, range(pm(11,30), End))).
 
+% create 11:30 - 12:00 cell if event scheduled
 createCellsHelper(pm(11,30), Date, [cell(EName, Date, range(pm(11,30), End))]) :-
 	\+ assigned(_, slot(Date, range(pm(11,30), End))),
 	duringEvent(Date, pm(11,30), EName).
@@ -89,7 +108,7 @@ createAllRows([TopRow|TaskRows]) :-
 %Just appending row onto all the dates and returns it
 createTopRow(FactRow) :-
 		getPlanDatesC(Dates),
-		append(['row'], Dates, Row1),
+		append(['row', ''], Dates, Row1),
 		FactRow =.. Row1.
 
 %creates task rows for 15 min intervals OLD
