@@ -99,14 +99,35 @@ timeAfter30(T1, T2) :-
     timeAfterX(T1, T2, 30).
 
 timeAfterX(A,B,X) :-
-    nonvar(A), nonvar(B), nonvar(X), X >= 0, X < 1440,
+    nonvar(A), nonvar(B), nonvar(X),
+    X >= 0, X < 1440,
     timeAfterXForward(A,B1,X),
     B = B1.
+
+timeAfterX(A,am(B,C),X) :-
+    nonvar(A), var(B), var(C), nonvar(X),
+    X >= 0, X < 1440,
+    timeAfterXForward(A,am(B,C),X).
+timeAfterX(A,pm(B,C),X) :-
+    nonvar(A), var(B), var(C), nonvar(X),
+    X >= 0, X < 1440,
+    timeAfterXForward(A,pm(B,C),X).
 timeAfterX(A,B,X) :-
-    nonvar(A), var(B), nonvar(X), X >= 0, X < 1440,
+    nonvar(A), var(B), nonvar(X),
+    X >= 0, X < 1440,
     timeAfterXForward(A,B,X).
+
+timeAfterX(am(A,B),C,X) :-
+    var(A), var(B), nonvar(C), nonvar(X),
+    X >= 0, X < 1440,
+    timeAfterXBackward(am(A,B),C,X).
+timeAfterX(pm(A,B),C,X) :-
+    var(A), var(B), nonvar(C), nonvar(X),
+    X >= 0, X < 1440,
+    timeAfterXBackward(pm(A,B),C,X).
 timeAfterX(A,B,X) :-
-    var(A), nonvar(B), nonvar(X), X >= 0, X < 1440,
+    var(A), nonvar(B), nonvar(X),
+    X >= 0, X < 1440,
     timeAfterXBackward(A,B,X).
 
 %% Forward %%
