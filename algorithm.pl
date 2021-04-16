@@ -14,12 +14,24 @@ assertSchedule :-
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,
     findall(X, task(X), Tasks),
+    enough_time(Tasks),
     subdivide_tasks(Tasks, Block_List),
     assign_slots(Block_List, Scheduled_List, _),
     % insert_sort(Scheduled_List, Ordered_List),
     prereq_satisfied_wrapper(Scheduled_List).
 
-% findall(X, task(X), Tasks), assign_slots_wrapper(Tasks, X), insert_sort(X,Y).
+enough_time(Tasks) :-
+    sum_time(Tasks, Task_Time),
+    findall(slot(X,Y), slot(X,Y), Slots),
+    length(Slots, L),
+    time_available is L / 2,
+    task_time =< time_available.
+
+sum_time([],0).
+sum_time([H|T], N1) :-
+    duration(H,D),
+    sum_time(T, N2),
+    N1 is D + N2.
 
 % divides tasks into blocks of one hour
 subdivide_tasks([],[]).
