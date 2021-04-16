@@ -11,10 +11,9 @@ schedule_list(Ordered_List) :-
     findall(X, task(X), Tasks),
     subdivide_tasks(Tasks, Block_List),
     assign_slots_wrapper(Block_List, Scheduled_List),
-    % assign_slots_wrapper(Tasks, Scheduled_List),
     insert_sort(Scheduled_List, Ordered_List),
-    prereq_satisfied_wrapper(Ordered_List).
-    % ensure_breaks(Ordered_List).
+    prereq_satisfied_wrapper(Ordered_List),
+    ensure_breaks(Ordered_List).
 
 % findall(X, task(X), Tasks), assign_slots_wrapper(Tasks, X), insert_sort(X,Y).
 
@@ -90,7 +89,8 @@ ensure_breaks(List) :- max_time(Max), length(List, Len), Len =< Max.
     % true if there is not enough slots to exceed max
 ensure_breaks([H|T]) :- 
     max_time(Max),
-    take([H|T], Max+1, Front),
+    Max1 is Max+1,
+    take([H|T], Max1, Front),
     contains_break(Front),
     ensure_breaks(T).
 
@@ -100,9 +100,10 @@ contains_break([assigned(_,slot(DateA,range(_,EndA))),
                 assigned(_,slot(DateB,range(StartB,_)))]) :- 
                     DateA \= DateB ; EndA \= StartB. % pretty sure midnight breaks this, let's hope that doesn't come up
 contains_break([assigned(_,slot(DateA,range(_,EndA))),
-                assigned(_,slot(DateB,range(StartB,_)))|T]) :- 
+                assigned(B,slot(DateB,range(StartB,EndB)))|T]) :-
+                    T \= [], 
                     (DateA \= DateB ; EndA \= StartB) ;
-                    contains_break([assigned(_,slot(DateB,range(StartB,_)))|T]).
+                    contains_break([assigned(B,slot(DateB,range(StartB,EndB)))|T]).
 
 
 
@@ -161,4 +162,4 @@ before_slot(slot(D, range(_,End)), slot(D, range(Start,_))) :-
 
 % take(List1, N, List2) is true when List2 is the first N elements of List1
 take(_,0,[]).
-take([H|T1], N, [H|T2]) :- N_New is N-1, take(T1, N_New, T2).
+take([H|T1], N, [H|T2]) :- N > 0, N_New is N-1, take(T1, N_New, T2).
