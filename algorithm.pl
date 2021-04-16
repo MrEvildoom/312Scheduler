@@ -10,6 +10,7 @@ assertSchedule :-
 		schedule_list(SL),
         assertFacts(SL).
 
+%creates a list of scheduled items
 schedule_list(Scheduled_List) :-
     createSlotsWrapper,
     findall(X, task(X), Tasks),
