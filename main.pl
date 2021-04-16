@@ -31,11 +31,11 @@ processQuestions(n) :-
 processQuestions(y) :-
     write('What would you like to know?\n'), flush_output(current_output),
     write('(1) Show me info for task X \n'), flush_output(current_output), %done
-    write('(2) Show me info for event X? \n'), flush_output(current_output), 
+    write('(2) Show me info for event X? \n'), flush_output(current_output), %done B
     write('(3) When am I available on X date? \n'), flush_output(current_output), %done B
     write('(4) Which tasks require at least X hours? \n'), flush_output(current_output), %done
     write('(5) What task(s) are due on day X \n'), flush_output(current_output),        %done
-    write('(6) What days am I available at time X? \n'), flush_output(current_output),
+    write('(6) What days am I available at time X? \n'), flush_output(current_output),	%done B
     write('(7) Which tasks have a prerequisite? \n'), flush_output(current_output),
     write('(8) What is my shortest task? \n'), flush_output(current_output),            %done
     write('(9) What is my longest task? \n'), flush_output(current_output),       %done
@@ -85,7 +85,7 @@ executeChosenMethod('1') :-
     % read_sq(YorN), editTask(TName, YorN),
      askForInfo);
     (write('Task does not exist please try again.\n'), 
-    flush_output(current_output), executeChosenMethod('2')).
+    flush_output(current_output), executeChosenMethod('1')).
 
 makeTaskInfo(TName, Msg) :-
     task(TName), due(TName, Date, Time), 
@@ -93,14 +93,27 @@ makeTaskInfo(TName, Msg) :-
     convertDate(SQDD, Date), timeConvert(Time, CT),
     concatAtomList(['Task Name: ', TName, '\nDue Date: ', SQDD, ', ', CT, '\nDuration : ', Dur, ' hours\n', 'Prerequisite: ', Pre, '\n'], Msg).
 
-%TODO:
-executeChosenMethod('2').
-
 % editTask(_, 'n').
 % editTask(TName, 'y') :-
 %     write('what do you want to edit?\n 1. Name\n 2. Due Date\n 3. Due Time \n 4.Duration\n 5. Prerequisite'), flush_output(current_output).
 
-%TODO add loop if wrong input and edit if time
+%TODO:
+executeChosenMethod('2') :-
+		write('Event Name: '), flush_output(current_output),
+		read_sq(EName),
+		makeEventInfo(EName, Msg) ->
+		(write(Msg), flush_output(current_output),
+		askForInfo);
+		(write('Event does not exist please try again.\n'), 
+    flush_output(current_output), executeChosenMethod('2')).
+
+makeEventInfo(EName, Msg) :-
+		event(EName, Date, range(S, E)),
+		convertDate(CD, Date), timeConvert(S, St), timeConvert(E, End),
+		concatAtomList(['Event Name: ', EName, '\nDate: ', CD, '\nTime: ', St, ' - ', End, '\n'], Msg).
+
+
+%TODO edit if time
 executeChosenMethod('3') :-
     write('Date (MM/DD/YYYY): '), flush_output(current_output),
     read_sq(ChosenDate),
@@ -115,20 +128,7 @@ makeRangesInfo([range(S, E)|Ranges], NewRes) :-
     makeRangesInfo(Ranges, Res),
     timeConvert(S, St), timeConvert(E, End),
     concatAtomList([St, ' - ', End, '\n', Res], NewRes).
-
-executeChosenMethod('11') :-
-    write('You have chosen: Which tasks require X hours or more? \n'), flush_output(current_output),
-    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
-    read_sq(MinLength),
-    atom_number(MinLength, ConvertedMinLength) -> (findTasksOfMinLength(ConvertedMinLength), askForInfo);
-                                            (write('Non-numerical value given. Please give a numerical value.\n'), executeChosenMethod('4')).
-
-findTasksOfMinLength(X) :-
-    findall((taskName=Name, taskLength(hours)= Hours), (duration(Name, Hours), Hours >= X), ResultTasks),
-    write('Tasks with minimum length: \n'), flush_output(current_output),
-    writeResultList(ResultTasks).
     
-%Not sure how to verify the dates are numbers. can just assume correctness?
 executeChosenMethod('5') :-
     write('You have chosen: What task(s) are due on day X? \n'), flush_output(current_output),
     write('Please give a day input of the form MM/DD/YYYY \n'), flush_output(current_output),
@@ -139,7 +139,6 @@ executeChosenMethod('5') :-
                                             askForInfo);
                                             (write('Incorrect format given.\n'), executeChosenMethod('5')).
 
-%NOT working
 findTasksDueOnDay(ConvertedDate, ResultTasks) :-
     findall(due(Name, ConvertedDate, _), due(Name, ConvertedDate, _), ResultTasks),
     write('Tasks due on given day: \n'), flush_output(current_output),
@@ -147,19 +146,46 @@ findTasksDueOnDay(ConvertedDate, ResultTasks) :-
 
 formatTasksDueOnDay([],'').
 formatTasksDueOnDay([due(TN, D, _)|Durs], NewRes) :-
-    formatTasksDueOnDay(Durs, Res),
-    concatAtomList(['Task Name: ', TN, ', DueDate: ', D, '\n', Res], NewRes).
+    formatTasksDueOnDay(Durs, Res), convertDate(CD, D),
+    concatAtomList(['Task Name: ', TN, ', DueDate: ', CD, '\n', Res], NewRes).
 
 %Cant figure this out
 executeChosenMethod('6') :-
-    write('You have chosen: What days am I available at time X? \n'), flush_output(current_output).
+    write('You have chosen: What days am I available at time X? \n'), flush_output(current_output),
+		write('Please Give a time input of form HH:MM (24hr)\n'), flush_output(current_output),
+		write('Time: '), flush_output(current_output),
+		read_sq(Time), 
+		convertTime(Time, CT) -> 
+		(findall(available(D, R), available(D, R), Dates), makeDateInfo(CT, Dates, FD),
+		formatDateMsg(FD, Msg), write(Msg), flush_output(current_output));
+		(write('Invalid input, please try again.\n'), 
+        flush_output(current_output), executeChosenMethod('6')).
 
-%what is an empty cell symbolized as?
+formatDateMsg([], '').
+formatDateMsg([Date|Dates], NewRes) :-
+		formatDateMsg(Dates, Res),
+		concatAtomList([Date, '\n', Res], NewRes).
+
+makeDateInfo(_, [], []).
+makeDateInfo(CT, [available(Date, R)|Dates], [CD|FDates]) :-
+		betweenTime(R, CT), convertDate(CD, Date),
+		makeDateInfo(CT, Dates, FDates).
+makeDateInfo(CT, [available(Date, R)|Dates], FDates) :-
+		\+ betweenTime(R, CT),
+		makeDateInfo(CT, Dates, FDates).
+
 executeChosenMethod('7') :-
     write('You have chosen: Which tasks have a prerequisite? \n'), flush_output(current_output),
-    write('Tasks with a prerequisite \n'), flush_output(current_output),
-    writeResultList(ResultTasks),
+    findall(prequisite(Name, Prereq), (prequisite(Name, Prereq), Prereq \= ''), TasksWithPrereq),
+    formatTasksWithPrereq(TasksWithPrereq, ResultTasks),
+    write('Tasks with a prerequisite: \n'), flush_output(current_output),
+    write(ResultTasks), write('\n'), flush_output(current_output),
     askForInfo.
+
+formatTasksWithPrereq([],'').
+formatTasksWithPrereq([prequisite(Name, Prereq)|Prereqs], NewRes) :-
+    formatTasksWithPrereq(Prereqs, Res),
+    concatAtomList(['Task Name: ', Name, ', Prerequisite: ', Prereq, '\n', Res], NewRes).
 
 executeChosenMethod('8') :-
     write('You have chosen: What is my shortest task? \n'), flush_output(current_output),
@@ -219,6 +245,18 @@ duration(test, 2).
 duration(test, 3).
 duration(test, 6).
 
+
+% executeChosenMethod('4') :-
+%     write('You have chosen: Which tasks require X hours or more? \n'), flush_output(current_output),
+%     write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
+%     read_sq(MinLength),
+%     atom_number(MinLength, ConvertedMinLength) -> (findTasksOfMinLength(ConvertedMinLength), askForInfo);
+%                                             (write('Non-numerical value given. Please give a numerical value.\n'), executeChosenMethod('4')).
+
+% findTasksOfMinLength(X) :-
+%     findall((taskName=Name, taskLength(hours)= Hours), (duration(Name, Hours), Hours >= X), ResultTasks),
+%     write('Tasks with minimum length: \n'), flush_output(current_output),
+%     writeResultList(ResultTasks).
 
 
 %findall is super helpful, it finds all the stuff in the knoweldge base that satisfies the given constraints with a list
