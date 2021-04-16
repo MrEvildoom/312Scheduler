@@ -119,7 +119,7 @@ executeChosenMethod('3') :-
     read_sq(ChosenDate),
     convertDate(ChosenDate, CD) ->
     (findall(R, available(CD, R), Ranges), makeRangesInfo(Ranges, Msg),
-    write(Msg),  flush_output(current_output));
+    write(Msg),  flush_output(current_output), askForInfo);
     (write('Invalid input, please try again.\n'), 
     flush_output(current_output), executeChosenMethod('3')).
 
@@ -135,7 +135,7 @@ executeChosenMethod('5') :-
     read_sq(GivenDate),
     convertDate(GivenDate, ConvertedDate) -> (findTasksDueOnDay(ConvertedDate, ResultTasks), 
                                             formatTasksDueOnDay(ResultTasks, FormattedResults),
-                                            write(FormattedResults),
+                                            write(FormattedResults), flush_output(current_output),
                                             askForInfo);
                                             (write('Incorrect format given.\n'), executeChosenMethod('5')).
 
@@ -157,7 +157,7 @@ executeChosenMethod('6') :-
 		read_sq(Time), 
 		convertTime(Time, CT) -> 
 		(findall(available(D, R), available(D, R), Dates), makeDateInfo(CT, Dates, FD),
-		formatDateMsg(FD, Msg), write(Msg), flush_output(current_output));
+		formatDateMsg(FD, Msg), write(Msg), flush_output(current_output), askForInfo);
 		(write('Invalid input, please try again.\n'), 
         flush_output(current_output), executeChosenMethod('6')).
 
@@ -198,7 +198,7 @@ findShortestTask([], duration(Name, Length)) :-
     write(Name), flush_output(current_output),
     write('\nWhich will take you '), flush_output(current_output),
     write(Length), flush_output(current_output),
-    write('hour(s).\n'), flush_output(current_output).
+    write(' hour(s).\n'), flush_output(current_output).
 
 
 findShortestTask([duration(Name, TaskLength)|Rest], duration(Name1, TaskLength1)) :-
@@ -221,7 +221,7 @@ findLongestTask([], duration(Name, Length)) :-
     write(Name), flush_output(current_output),
     write('\nWhich will take you '), flush_output(current_output),
     write(Length), flush_output(current_output),
-    write('hour(s).\n'), flush_output(current_output).
+    write(' hour(s).\n'), flush_output(current_output).
 
 
 writeResultList([]).
