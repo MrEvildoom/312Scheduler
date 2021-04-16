@@ -1,0 +1,12 @@
+Task Name,Date Due (MM/DD/YYYY),Time Due (24hr),Task Length (hours),Prerequisites
+CPSC 312 Final,4/19/2021,8:00,10,CPSC 312 Project
+CPSC 312 Project,4/11/2021,23:59,20,
+Clean House,4/8/2021,20:00,8,
+Quiz,4/10/2021,10:00,25,
+Quiz2,4/18/2021,10:00,30,
+CPSC 310 project,4/17/2021,10:00,15,
+Quiz,4/10/2021,10:00,30,
+CPSC 312 Final,4/18/2021,10:00,30,
+Quiz,4/20/2021,10:00,35,
+Quiz,4/15/2021,10:00,12,
+Quiz,4/10/2021,10:00,14,
