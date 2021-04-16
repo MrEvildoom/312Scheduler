@@ -1,5 +1,11 @@
 %% File for all date time operations %%
-
+:- module(datetime, 
+    [convertDate/2, convertTime/2, timeConvert/2,
+    beforeTime/2, beforeDate/2,
+    lengthT/2,
+    timeAfter15/2, timeAfter30/2, timeAfterX/3,
+    roundDown30/2, roundUp30/2,
+    betweenTime/2, betweenTimeNE/2]).
 :- dynamic slot/2, event/3.
 
 % takes in a single quote date item and returns the datre in format date(MM, DD, YYYY)

@@ -1,5 +1,5 @@
 :- include('data.pl').
-:- include('slots.pl').
+:- include('slot.pl').
 :- use_module(set).
 :- dynamic slot/2, assigned/2.
 
@@ -46,7 +46,8 @@ before_due(Task, slot(Date, range(_,Time))) :-
 break_check(Slot, Set) :-
     neighbors(Slot, Set, N),
     max_time(Max),
-    Max >= N + 1.
+    N1 is N + 1,
+    Max >= N1.
 
 % prereq_satisfied_wrapper is true if every assigned(task, slot) with a prereq has no slot with that prereq occuring after it
 prereq_satisfied_wrapper(X) :- prereq_satisfied(X, X).

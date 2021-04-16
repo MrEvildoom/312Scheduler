@@ -1,5 +1,6 @@
 %% File for all slots operations %%
-:- dynamic slot/2.
+:- use_module(datetime).
+:- dynamic slot/2, available/2, event/3.
 
 createSlotsWrapper :-
     retractall(slot(_,_)),
@@ -48,6 +49,15 @@ before_slot(slot(D, range(_,End)), slot(D, range(Start,_))) :-
     beforeTime(End, Start).
 
 % slotRightAfter(A, B) is true if B is right after A
+% if B is unknow, it can be calculated
 slot_next(slot(D, range(A, B)), slot(D, range(B, C))) :-
+    % nonvar(A), var(C),
     slot(D, range(A,B)),
+    % timeAfter30(B, C),
     slot(D, range(B,C)).
+% if A is unknown we have to check the KB.
+slot_next(slot(D, range(A, B)), slot(D, range(B, C))) :-
+    % var(A), nonvar(C),
+    slot(D, range(B,C)),
+    slot(D, range(A,B)).
+    % timeAfter30(A, B).

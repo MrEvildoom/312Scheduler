@@ -1,8 +1,9 @@
 % CPSC 312 Project
 % Task Scheduler
 % Brendan Woodward, David Liu, Jack Heidal
-:- include('datetime.pl').
+% :- include('datetime.pl').
 :- use_module(library(csv)).
+:- use_module(datetime).
 :- dynamic task/1, due/3, duration/2, prequisite/2, available/2, event/1, start/2, end/2, planstart/1, planend/1.
 
 % loads files from user given location
@@ -32,10 +33,10 @@ load :-
 % loads files without the user neeeding to input location
 auto_load :-
     retractFacts,
-    csv_read_file('tasks.csv', Tasks, [functor(task), arity(5), skip_header('Task Name')]),
+    csv_read_file('task.csv', Tasks, [functor(task), arity(5), skip_header('Task Name')]),
     csv_read_file('profile.csv', Profile, [functor(avail), arity(3), skip_header('Date (MM/DD/YYYY)')]),
     readTop2('profile.csv', StartD, EndD),
-    csv_read_file('busy.csv', Events, [functor(event), arity(4), skip_header('Busy Event')]),
+    csv_read_file('event.csv', Events, [functor(event), arity(4), skip_header('Busy Event')]),
     write('Loading Tasks, Profile, and Events...\n'), flush_output(current_output),
     createTasks(Tasks, TFacts),
     assertFacts(TFacts),
