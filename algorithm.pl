@@ -1,7 +1,7 @@
 :- include('data.pl').
 :- include('slot.pl').
 :- use_module(set).
-:- dynamic slot/2, assigned/2.
+:- dynamic slot/2, assigned/2, max_time/1.
 
 %create a schedule and assert assigned slots into the knowledge base
 assertSchedule :-
@@ -44,7 +44,7 @@ before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
     (Date == Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
-max_time(4). % the maximum amount of slots that can scheduled consecutively
+max_time(0). % the maximum amount of slots that can scheduled consecutively
 
 % break_check(Elem, Set) is true if inserting Elem into Set
 % would not cause Set to include more than the max allowable length on uninterrupted elements.

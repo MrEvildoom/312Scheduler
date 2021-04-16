@@ -1,6 +1,7 @@
 %% File for all date time operations %%
 :- module(datetime, 
     [convertDate/2, convertTime/2, timeConvert/2,
+    convertTimeRange/2,
     beforeTime/2, beforeDate/2,
     lengthT/2,
     timeAfterX/3, timeAfter15/2, timeAfter30/2,

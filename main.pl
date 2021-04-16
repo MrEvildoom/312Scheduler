@@ -7,12 +7,23 @@ mainf :-
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),
     read_sq(_),
     catch(load, _, recoverLoad),
-    askForInfo,
+    askForInfo, 
+    getMaxTime,
     write('Creating a schedule for you...\n'), flush_output(current_output),
     once(assertSchedule),
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
     writeToCSV,
     write('Schedule written to output.csv!\n'), flush_output(current_output).
+
+getMaxTime :-
+    write('Do you want to schedule breaks after 2 hours? (or no breaks) (y/n)\n'), flush_output(current_output),
+    read_sq(YorN),
+    (isYes(YorN) -> 
+    (changeMaxTime);
+    (true)).
+
+changeMaxTime :-
+    retractall(max_time(_)), assert(max_time(4)).
 
 % recovers the load from a catch and redoes load until it works
 recoverLoad :-
@@ -31,6 +42,9 @@ askForInfo :-
 %true if y or n
 checkYes(y).
 checkYes(n).
+
+%true if yes
+isYes(y).
 
 % if n proceed, if y process user input to answer questions about files.
 processQuestions(n) :-

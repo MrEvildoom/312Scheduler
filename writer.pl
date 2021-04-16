@@ -153,4 +153,6 @@ createTaskList(Time, Date, [TName|Tasks]) :-
 writeToCSV :-
 	once(createCellsWrapper),
 	once(createAllRows(Rows)),
-	csv_write_file("output.csv", Rows).
+	write('what do you want to call the output file (end in .csv): '), flush_output(current_output),
+	read_line(File),
+	csv_write_file(File, Rows).
