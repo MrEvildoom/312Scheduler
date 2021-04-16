@@ -12,7 +12,7 @@ schedule_list(Ordered_List) :-
     findall(X, task(X), Tasks),
     subdivide_tasks(Tasks, Block_List),
     assign_slots(Block_List, Scheduled_List, _),
-    insert_sort(Scheduled_List, Ordered_List),
+    % insert_sort(Scheduled_List, Ordered_List),
     prereq_satisfied_wrapper(Ordered_List).
 
 % findall(X, task(X), Tasks), assign_slots_wrapper(Tasks, X), insert_sort(X,Y).
@@ -39,6 +39,8 @@ assign_slots([H_Task|T_task], [assigned(H_Task,slot(D,R))|T_Assigned], New_Set) 
 before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
     (Date == Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
+
+max_time(4). % the maximum amount of slots that can scheduled consecutively
 
 % break_check(Elem, Set) is true if inserting Elem into Set
 % would not cause Set to include more than the max allowable length on uninterrupted elements.
@@ -70,42 +72,6 @@ prereq_iter(Slot, Prereq, [assigned(H,_)|T]) :-
     Prereq \= H,
     prereq_iter(Slot, Prereq, T).
 
-
-
-insert_sort(List,Sorted):-i_sort(List,[],Sorted).
-i_sort([],Acc,Acc).
-i_sort([H|T],Acc,Sorted):-insert(H,Acc,NAcc),i_sort(T,NAcc,Sorted).
-
-insert(assigned(X,XS),[assigned(Y,YS)|T],[assigned(Y,YS)|NT]) :- 
-    before_slot(YS,XS),insert(assigned(X,XS),T,NT).
-insert(assigned(X,XS),[assigned(Y,YS)|T],[assigned(X,XS),assigned(Y,YS)|T]) :- 
-    before_slot(XS,YS).
-insert(X,[],[X]).
-
-
-
-max_time(4). % the maximum amount of slots that can scheduled consecutively
-
-% ensures that there are not five assigned time slots in a row
-ensure_breaks(List) :- max_time(Max), length(List, Len), Len =< Max.
-    % true if there is not enough slots to exceed max
-ensure_breaks([H|T]) :- 
-    max_time(Max),
-    Max1 is Max+1,
-    take([H|T], Max1, Front),
-    contains_break(Front),
-    ensure_breaks(T).
-
-% contains_break(List_Assigned) is true if there is at least one pair of non-consecutive assigned_tasks adjacent in the list
-% lists with less than two elements do not contain a pair of non-consequtive elements.
-contains_break([assigned(_,slot(DateA,range(_,EndA))),
-                assigned(_,slot(DateB,range(StartB,_)))]) :- 
-                    DateA \= DateB ; EndA \= StartB. % pretty sure midnight breaks this, let's hope that doesn't come up
-contains_break([assigned(_,slot(DateA,range(_,EndA))),
-                assigned(B,slot(DateB,range(StartB,EndB)))|T]) :-
-                    T \= [], 
-                    (DateA \= DateB ; EndA \= StartB) ;
-                    contains_break([assigned(B,slot(DateB,range(StartB,EndB)))|T]).
 
 % helper functions
 
