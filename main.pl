@@ -30,10 +30,10 @@ processQuestions(n) :-
     write('Understood. Moving forward to create a schedule.\n'), flush_output(current_output).
 processQuestions(y) :-
     write('What would you like to know?\n'), flush_output(current_output),
-    write('(1) Which tasks take at least X hours? \n'), flush_output(current_output), %done B
-    write('(2) Show me info for task X \n'), flush_output(current_output), %done B
+    write('(1) Show me info for task X \n'), flush_output(current_output), %done
+    write('(2) Show me info for event X? \n'), flush_output(current_output), 
     write('(3) When am I available on X date? \n'), flush_output(current_output), %done B
-    write('(4) Which tasks require X hours or more? \n'), flush_output(current_output), %done
+    write('(4) Which tasks require at least X hours? \n'), flush_output(current_output), %done
     write('(5) What task(s) are due on day X \n'), flush_output(current_output),        %done
     write('(6) What days am I available at time X? \n'), flush_output(current_output),
     write('(7) Which tasks have a prerequisite? \n'), flush_output(current_output),
@@ -43,7 +43,10 @@ processQuestions(y) :-
     executeChosenMethod(ChosenOption) -> true;
                                         (write('Please choose an option from 1-9 or x. \n'), processQuestions(y)).
 
-executeChosenMethod('1') :-
+%wrong method!!!
+executeChosenMethod('4') :-
+    write('You have chosen: Which tasks require at least X hours? \n'), flush_output(current_output),
+    write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
     write('Number of hours: '), flush_output(current_output),
     read_term(Hrs), 
     number(Hrs) -> (getTasksDur(Hrs, Tasks),
@@ -73,7 +76,7 @@ compareD(Dur, Hrs) :-
     TD >= Hrs.
 
 %TODO edit if time
-executeChosenMethod('2') :-
+executeChosenMethod('1') :-
     write('Task Name: '), flush_output(current_output),
     read_sq(TName),
     makeTaskInfo(TName, Msg) ->
@@ -89,6 +92,9 @@ makeTaskInfo(TName, Msg) :-
     duration(TName, Dur), prequisite(TName, Pre),
     convertDate(SQDD, Date), timeConvert(Time, CT),
     concatAtomList(['Task Name: ', TName, '\nDue Date: ', SQDD, ', ', CT, '\nDuration : ', Dur, ' hours\n', 'Prerequisite: ', Pre, '\n'], Msg).
+
+%TODO:
+executeChosenMethod('2').
 
 % editTask(_, 'n').
 % editTask(TName, 'y') :-
@@ -110,7 +116,7 @@ makeRangesInfo([range(S, E)|Ranges], NewRes) :-
     timeConvert(S, St), timeConvert(E, End),
     concatAtomList([St, ' - ', End, '\n', Res], NewRes).
 
-executeChosenMethod('4') :-
+executeChosenMethod('11') :-
     write('You have chosen: Which tasks require X hours or more? \n'), flush_output(current_output),
     write('Please provide the minimum length of your desired tasks. \n'), flush_output(current_output),
     read_sq(MinLength),
@@ -127,13 +133,22 @@ executeChosenMethod('5') :-
     write('You have chosen: What task(s) are due on day X? \n'), flush_output(current_output),
     write('Please give a day input of the form MM/DD/YYYY \n'), flush_output(current_output),
     read_sq(GivenDate),
-    convertDate(GivenDate, ConvertedDate) -> (findTasksDueOnDay(ConvertedDate), askForInfo);
+    convertDate(GivenDate, ConvertedDate) -> (findTasksDueOnDay(ConvertedDate, ResultTasks), 
+                                            formatTasksDueOnDay(ResultTasks, FormattedResults),
+                                            write(FormattedResults),
+                                            askForInfo);
                                             (write('Incorrect format given.\n'), executeChosenMethod('5')).
 
-findTasksDueOnDay(ConvertedDate) :-
-    findall((taskName=Name, dueDate=ConvertedDate, dueAt=DueTime), due(Name, ConvertedDate, DueTime), ResultTasks),
+%NOT working
+findTasksDueOnDay(ConvertedDate, ResultTasks) :-
+    findall(due(Name, ConvertedDate, _), due(Name, ConvertedDate, _), ResultTasks),
     write('Tasks due on given day: \n'), flush_output(current_output),
     writeResultList(ResultTasks).
+
+formatTasksDueOnDay([],'').
+formatTasksDueOnDay([due(TN, D, _)|Durs], NewRes) :-
+    formatTasksDueOnDay(Durs, Res),
+    concatAtomList(['Task Name: ', TN, ', DueDate: ', D, '\n', Res], NewRes).
 
 %Cant figure this out
 executeChosenMethod('6') :-
