@@ -20,12 +20,17 @@ schedule_list(Scheduled_List) :-
     % insert_sort(Scheduled_List, Ordered_List),
     prereq_satisfied_wrapper(Scheduled_List).
 
+% enough_time(Tasks) is true if there is enough time to do all tasks
+% assuming we take the maximum number of breaks
 enough_time(Tasks) :-
+    max_time(X),
+    (X \= 0 -> Task_Time_Adj is 1 / X ; Task_Time_Adj is 0),
     sum_time(Tasks, Task_Time),
+    Real_Task_Time is Task_Time + (Task_Time * Task_Time_Adj),
     findall(slot(X,Y), slot(X,Y), Slots),
     length(Slots, L),
     Time_available is L / 2,
-    Task_Time =< Time_available.
+    Real_Task_Time =< Time_available.
 
 sum_time([],0).
 sum_time([H|T], N1) :-
