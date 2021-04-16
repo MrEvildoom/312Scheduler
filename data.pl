@@ -78,14 +78,6 @@ createAvails(Date, [Range|Ranges], [Fact|Facts]) :-
     Fact =.. ['available', Date, Range],
     createAvails(Date, Ranges, Facts).
 
-% convertTimeRange takes a lsit of time ranges and returns a list formatted as range(am(11,00) ,pm(1,00))
-convertTimeRange([],[]).
-convertTimeRange([TimeR|Times], [range(StartTime, EndTime)|ListRange]) :-
-    term_to_atom(SH:SM-EH:EM, TimeR), term_to_atom(SH:SM, ST), term_to_atom(EH:EM, ET),
-    convertTime(ST, StartTime),
-    convertTime(ET, EndTime),
-    convertTimeRange(Times, ListRange).
-
 % createEvents iterates through the events and formats them into propper facts ie. start('Practice', date(04, 12, 2021), pm(4, 45))
 createEvents([],[]).
 createEvents([event(Name, Date, Start, End)|Events], [NFact|Facts]) :-
@@ -107,7 +99,6 @@ retractFacts :-
     retractall(available(_,_)), retractall(planstart(_)), retractall(planend(_)),
     retractall(event(_,_,_)).
     
-
 % assertFacts iterates through a list of facts and asserts them
 assertFacts([]).
 assertFacts([H|T]) :-
@@ -137,6 +128,7 @@ readTop2(File, Row1, Row2) :-
     csv_read_file_row(File, Row2, [line(Num2)]),
     Num2 is Num + 1.
 
+%true if items in the list are single quote atoms and the Result is all items in the list concatenated togther
 concatAtomList([], '').
 concatAtomList([Item|Rest], NewResult) :-
     concatAtomList(Rest, Result),

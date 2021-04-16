@@ -3,6 +3,7 @@
 :- use_module(set).
 :- dynamic slot/2, assigned/2.
 
+%create a schedule and assert assigned slots into the knowledge base
 assertSchedule :-
         %retractall(assigned(_,_)),
         findall(assigned(X,Y), assigned(X,Y), []),

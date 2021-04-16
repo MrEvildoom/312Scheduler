@@ -1,16 +1,15 @@
 %% File to write the schedule results to a CSV file %%
 :- include('algorithm.pl').
+:- dynamic cell/3.
 
-% assigned('test', slot(date(4,6,2021), range(am(12,0), am(12,30)))).
-
-% if asssigned slots are stored in KB like: assigned(TName, slot(Date, Range)) then to make all cells in output:
-% create cells asserts in KB cell(TName, Slot), where TName is the task name assigned to Slot or '' if no task assigned
+% true if cells are asserted into the knowledge base where a cell is the name of the task, event, or an 'x' for busy or '' for unscheduled at each tiem of each day
 createCellsWrapper :-
 	retractall(cell(_,_,_)),
 	planstart(Date),
 	createCells(Date, Cells),
 	maplist(assert, Cells).
 
+% true if AllCells is all cells from Date to the planend
 createCells(Date, Cells) :- planend(Date), createCellsHelper(am(12,0), Date, Cells).
 createCells(Date, AllCells) :-
 	\+ planend(Date),
@@ -20,7 +19,7 @@ createCells(Date, AllCells) :-
 	createCells(ND, Cells).
 
 
-%create cells where a task has been assigned
+% create cells where a task has been assigned
 createCellsHelper(Time, Date, [cell(TName, Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
 	assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
@@ -76,6 +75,7 @@ getPlanDatesC([CDate|Dates]) :-
 		nextDay(Date, Date2),
 		getPlanDatesHelpC(Date2, Dates).
 
+% converts the dates until plan end
 getPlanDatesHelpC(Date, [CDate]) :- planend(Date), convertDate(CDate, Date).
 getPlanDatesHelpC(Date, [CDate|Dates]) :-
 		nextDay(Date, Date2),
@@ -83,30 +83,31 @@ getPlanDatesHelpC(Date, [CDate|Dates]) :-
 		convertDate(CDate, Date),
 		getPlanDatesHelpC(Date2, Dates).
 
-%Gets plan dates in date(MM, DD, YYYY) format
+% Gets plan dates in date(MM, DD, YYYY) format
 getPlanDates([Date|Dates]) :-
 		planstart(Date),
 		nextDay(Date, Date2),
 		getPlanDatesHelp(Date2, Dates).
 
+% gets dates until plan end
 getPlanDatesHelp(Date, [Date]) :- planend(Date).
 getPlanDatesHelp(Date, [Date|Dates]) :-
 		nextDay(Date, Date2),
 		\+ planend(Date),
 		getPlanDatesHelp(Date2, Dates).
 
-%Creates all rows for CSV writing
+% Creates all rows for CSV writing
 createAllRows([TopRow|TaskRows]) :-
 		createTopRow(TopRow),
 		createTaskRows30(am(12,0), TaskRows).
 
-%Just appending row onto all the dates and returns it
+% Just appending row onto all the dates and returns it
 createTopRow(FactRow) :-
 		getPlanDatesC(Dates),
 		append(['row', ''], Dates, Row1),
 		FactRow =.. Row1.
 
-%creates task rows for 15 min intervals OLD
+% creates task rows for 15 min intervals OLD
 createTaskRows15(pm(11,45), [Fact1]) :- 
 	planstart(Date),
 	createTaskList(pm(11,45), Date, Tasks),
@@ -153,37 +154,3 @@ writeToCSV :-
 	once(createCellsWrapper),
 	once(createAllRows(Rows)),
 	csv_write_file("output.csv", Rows).
-
-%map_item(P, row(Name, Date, range(S, E))) :-
-%    P =.. [_, Date, Name, atom_concat(S, '-', E)].
-
-%map_item(P, row(Name, Date, Range)) :-
-%    P =.. [_, Date, Name, Range].
-
-%map_item(P, row(Name, Date, range(S, E))) :-
-%	atomic_concat(S, ':' ,L),
-%	atomic_concat(L, ':' ,R),
-%   P =.. [_, Date, Name, R].
-
-%map_item(P, row(Name, Date, Range)) :-
-	%atomic_concat('', ':', E),
-%    P =.. [_, Date, Name, E].
-
-%insert(File, Data) :-
-    %maplist(map_item, Data, Rows),
-%    csv_write_file(File, Data, [separator(0',)]).
-
-% insert("output.csv",[test(name, a, b, c), test(name, d, e, f), test(name, g, h, c)], test(name, g, m, i)]).
-% insert("output1.csv",[test(a, b, c1), test(d, e, f)]). %THIS WORKS
-
-% insert("output.csv",[scheduledTask("Work on 312 assignment", "4/6/2021", "12:00")]).
-						
-% insert("output.csv",[scheduledTask("Work on 312 assignment", "4/6/2021", range(1200, 5000))]).
-
-%insert("output.csv",[	scheduledTask(name, date, range()), 
-%						scheduledTask(name, date, range()), 
-%						scheduledTask(name, date, range()),  
-%						scheduledTask(name, date, range()), 
-%						scheduledTask(name, date, range()), 
-%						scheduledTask(name, date, range()), 
-%						scheduledTask(name, date, range(12,14))]).

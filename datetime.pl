@@ -38,19 +38,13 @@ timeConvert(pm(H, M), Time) :-
 timeConvert(pm(12, M), Time) :-
     term_to_atom(12:M, Time).
 
-% timeConvert(am(H, M), Time) :-
-%     term_to_atom(H:NM, Time),
-%     H < 12, M < 10, atom_concat(0,M,NM).
-% timeConvert(am(12, M), Time) :-
-%     term_to_atom(0:NM, Time),
-%     M < 10, atom_concat(0,M,NM).
-% timeConvert(pm(H, M), Time) :-
-%     atom_concat(0,M,NM),
-%     term_to_atom(PH:NM, Time),
-%     H < 12, PH is H + 12, M < 10.
-% timeConvert(pm(12, M), Time) :-
-%     term_to_atom(12:NM, Time),
-%     M < 10, atom_concat(0,M,NM).
+% convertTimeRange takes a lsit of time ranges and returns a list formatted as range(am(11,00) ,pm(1,00))
+convertTimeRange([],[]).
+convertTimeRange([TimeR|Times], [range(StartTime, EndTime)|ListRange]) :-
+    term_to_atom(SH:SM-EH:EM, TimeR), term_to_atom(SH:SM, ST), term_to_atom(EH:EM, ET),
+    convertTime(ST, StartTime),
+    convertTime(ET, EndTime),
+    convertTimeRange(Times, ListRange).
 
 % beforeTime(T1, T2) is true if time 1 (is a time) and is less than time 2 (which is also a time)
 beforeTime(am(_,_), pm(_,_)).
@@ -86,6 +80,7 @@ lengthT(range(am(H1, M1), pm(12, M2)), L) :-
 lengthT(range(am(12, M1), pm(12, M2)), L) :-
     L is 12*60 + M2 - M1.
 
+%lengthTHours is true if L is the length in Hours of the range
 lengthTHours(Range, L) :-
     lengthT(Range, LM),
     L is LM / 60.
@@ -98,6 +93,7 @@ timeAfter15(T1, T2) :-
 timeAfter30(T1, T2) :-
     timeAfterX(T1, T2, 30).
 
+% true if B is the time after X of A
 timeAfterX(A,B,X) :-
     nonvar(A), nonvar(B), nonvar(X),
     X >= 0, X < 1440,
