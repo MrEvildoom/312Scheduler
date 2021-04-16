@@ -36,7 +36,6 @@ neighbors(Elem, Set, Num) :-
     r_neighbors(Elem, Set, R),
     Num is L + R.
 
-l_neighbors(_,empty,0).
 l_neighbors(Elem, Set, Num) :-
     next(N_Elem, Elem),
    (member(N_Elem, Set) ->
@@ -46,7 +45,6 @@ l_neighbors(Elem, Set, Num) :-
 l_neighbors(Elem,_, 0) :-
     \+ next(_,Elem).
 
-r_neighbors(_,empty,0).
 r_neighbors(Elem, Set, Num) :-
     next(Elem, N_Elem),
    (member(N_Elem, Set) ->
@@ -56,6 +54,6 @@ r_neighbors(Elem, Set, Num) :-
 r_neighbors(Elem,_, 0) :-
     \+ next(Elem,_).
 
-next(slot(A,B), slot(C,D)) :- slot_next(slot(A,B), slot(C,D)).
+% next(slot(A,B), slot(C,D)) :- slot_next(slot(A,B), slot(C,D)).
 % next(A,B) :- number(A), not(var(A)), var(B), B is A + 1.
 % next(A,B) :- number(B), var(A), not(var(B)), A is B - 1.

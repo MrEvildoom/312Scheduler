@@ -1,4 +1,5 @@
 :- include('writer.pl').
+:- discontiguous executeChosenMethod/1.
 
 mainf :-
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),

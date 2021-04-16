@@ -14,7 +14,6 @@ schedule_list(Ordered_List) :-
     assign_slots(Block_List, Scheduled_List, _),
     insert_sort(Scheduled_List, Ordered_List),
     prereq_satisfied_wrapper(Ordered_List).
-    % ensure_breaks(Ordered_List).
 
 % findall(X, task(X), Tasks), assign_slots_wrapper(Tasks, X), insert_sort(X,Y).
 
