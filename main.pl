@@ -16,19 +16,14 @@ mainf :-
     write('Schedule written to output.csv!\n'), flush_output(current_output).
 
 getMaxTime :-
-    write('Do you want to set a maximum amount of time to work on tasks in a row? (y/n)\n'), flush_output(current_output),
+    write('Do you want to schedule breaks after 2 hours? (or no breaks) (y/n)\n'), flush_output(current_output),
     read_sq(YorN),
-    (checkYes(YorN) -> 
+    (isYes(YorN) -> 
     (changeMaxTime);
     (true)).
 
 changeMaxTime :-
-    write('What is the max hours you wish to work in a row? (enter a number): \n'), flush_output(current_output),
-    read_term(MT),
-    (number(MT) ->
-    (retractall(max_time(_)), MT30 is MT*2, assert(max_time(MT30)));
-    (write('Invalid input, please try again.\n'), 
-    flush_output(current_output), changeMaxTime)).
+    retractall(max_time(_)), assert(max_time(4)).
 
 % recovers the load from a catch and redoes load until it works
 recoverLoad :-
@@ -47,6 +42,9 @@ askForInfo :-
 %true if y or n
 checkYes(y).
 checkYes(n).
+
+%true if yes
+isYes(y).
 
 % if n proceed, if y process user input to answer questions about files.
 processQuestions(n) :-
