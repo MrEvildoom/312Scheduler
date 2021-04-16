@@ -132,6 +132,8 @@ timeAfterX(A,B,X) :-
     var(A), nonvar(B), nonvar(X),
     timeAfterXBackward(A,B,X).
 
+%% Forward %%
+
 % adding more than 60 minutes
 timeAfterXForward(A,C,X) :-
     nonvar(A), var(C), nonvar(X), X>60,
@@ -165,32 +167,57 @@ timeAfterXForward(am(12, M1), am(1, M2), X) :-
     M3 >= 60,
     M2 is M3 - 60.
 
-% adding minutes without going over the hour
-timeAfterXForward(pm(H, M1), pm(H, M2), X) :-
-    nonvar(H), nonvar(M1), nonvar(X), X=<60,
-    M2 is M1 + X,
-    M2 < 60.
-% adding minutes going to or over the hour
-% 1 pm to 10 pm
-timeAfterXForward(pm(H1, M1), pm(H2, M2), X) :-
-    nonvar(H1), nonvar(M1), nonvar(X), X=<60,
-    M3 is M1 + X,
-    M3 >= 60,
-    M2 is M3 - 60,
-    H1 < 11,
-    H2 is H1 + 1.
-% adding mipnutes going to or over the hour, 11 pm to 12 am
-timeAfterXForward(pm(11, M1), am(12, M2), X) :-
-    nonvar(M1), nonvar(X), X=<60,
-    M3 is M1 + X,
-    M3 >= 60,
-    M2 is M3 - 60.
-% adding minutes going to or over the hour, 12 am to 1 am
-timeAfterXForward(pm(12, M1), pm(1, M2), X) :-
-    nonvar(M1), nonvar(X), X=<60,
-    M3 is M1 + X,
-    M3 >= 60,
-    M2 is M3 - 60.
+timeAfterXForward(pm(A,B), am(C,D), X) :-
+    nonvar(A), nonvar(B), var(C), var(D), nonvar(X),
+    timeAfterXForward(am(A,B), pm(C,D),X).
+
+timeAfterXForward(pm(A,B), pm(C,D), X) :-
+    nonvar(A), nonvar(B), var(C), var(D), nonvar(X),
+    timeAfterXForward(am(A,B), am(C,D),X).
+
+%% Backward %%
+
+% subtracting more than 60 minutes
+timeAfterXBackward(A,C,X) :-
+    var(A), nonvar(C), nonvar(X), X>60,
+    X1 is X - 60,
+    timeAfterXBackward(B,C,60),
+    timeAfterXBackward(A,B,X1).
+% subtracting minutes without going over the hour
+timeAfterXBackward(am(H, M1), am(H, M2), X) :-
+    nonvar(H), var(M1), nonvar(M2), nonvar(X), X=<60,
+    M1 is M2 - X,
+    M1 >= 0.
+% subtracting minutes going to or over the hour
+% 2 am to 11 am
+timeAfterXBackward(am(H1, M1), am(H2, M2), X) :-
+    var(H1), var(M1), nonvar(H2), nonvar(M2), nonvar(X), X=<60,
+    H2 > 1,
+    H2 < 12,
+    M3 is M2 - X,
+    M3 < 0,
+    M1 is M3 + 60,
+    H1 is H2 - 1.
+% subtracting minutes going to or over the hour, 12 am into 11 pm
+timeAfterXBackward(pm(11, M1), am(12, M2), X) :-
+    var(M1), nonvar(M2), nonvar(X), X=<60,
+    M3 is M2 - X,
+    M3 < 0,
+    M1 is M3 + 60.
+% subtracting minutes going to or over the hour, 12 am to 1 am
+timeAfterXBackward(am(12, M1), am(1, M2), X) :-
+    var(M1), nonvar(M2), nonvar(X), X=<60,
+    M3 is M2 - X,
+    M3 < 0,
+    M1 is M3 + 60.
+
+timeAfterXBackward(pm(A,B), pm(C,D), X) :-
+    var(A), var(B), nonvar(C), nonvar(D), nonvar(X),
+    timeAfterXBackward(am(A,B), am(C,D),X).
+
+timeAfterXBackward(am(A,B), pm(C,D), X) :-
+    var(A), var(B), nonvar(C), nonvar(D), nonvar(X),
+    timeAfterXBackward(pm(A,B), am(C,D),X).
 
 
 % gives the next day of the month
