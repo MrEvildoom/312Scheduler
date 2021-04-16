@@ -25,7 +25,7 @@ enough_time(Tasks) :-
     findall(slot(X,Y), slot(X,Y), Slots),
     length(Slots, L),
     time_available is L / 2,
-    task_time =< time_available.
+    Task_Time =< time_available.
 
 sum_time([],0).
 sum_time([H|T], N1) :-
