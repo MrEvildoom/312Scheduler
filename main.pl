@@ -7,12 +7,28 @@ mainf :-
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),
     read_sq(_),
     catch(load, _, recoverLoad),
-    askForInfo,
+    askForInfo, 
+    getMaxTime,
     write('Creating a schedule for you...\n'), flush_output(current_output),
     once(assertSchedule),
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
     writeToCSV,
     write('Schedule written to output.csv!\n'), flush_output(current_output).
+
+getMaxTime :-
+    write('Do you want to set a maximum amount of time to work on tasks in a row? (y/n)\n'), flush_output(current_output),
+    read_sq(YorN),
+    (checkYes(YorN) -> 
+    (changeMaxTime);
+    (true)).
+
+changeMaxTime :-
+    write('What is the max hours you wish to work in a row? (enter a number): \n'), flush_output(current_output),
+    read_term(MT),
+    (number(MT) ->
+    (retractall(max_time(_)), MT30 is MT*2, assert(max_time(MT30)));
+    (write('Invalid input, please try again.\n'), 
+    flush_output(current_output), changeMaxTime)).
 
 % recovers the load from a catch and redoes load until it works
 recoverLoad :-
