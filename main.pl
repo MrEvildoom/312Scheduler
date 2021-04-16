@@ -4,8 +4,8 @@
 mainf :- 
     retractall(assigned(_,_)),
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),
-    read_sq(Ready1),
-    catch(load, Err, recoverLoad),
+    read_sq(_),
+    catch(load, _, recoverLoad),
     askForInfo,
     write('Creating a schedule for you...\n'), flush_output(current_output),
     once(assertSchedule),
@@ -143,8 +143,7 @@ executeChosenMethod('5') :-
 
 findTasksDueOnDay(ConvertedDate, ResultTasks) :-
     findall(due(Name, ConvertedDate, _), due(Name, ConvertedDate, _), ResultTasks),
-    write('Tasks due on given day: \n'), flush_output(current_output),
-    writeResultList(ResultTasks).
+    write('Tasks due on given day: \n'), flush_output(current_output).
 
 formatTasksDueOnDay([],'').
 formatTasksDueOnDay([due(TN, D, _)|Durs], NewRes) :-
@@ -172,7 +171,7 @@ makeDateInfo(_, [], []).
 makeDateInfo(CT, [available(Date, R)|Dates], [CD|FDates]) :-
 		betweenTime(R, CT), convertDate(CD, Date),
 		makeDateInfo(CT, Dates, FDates).
-makeDateInfo(CT, [available(Date, R)|Dates], FDates) :-
+makeDateInfo(CT, [available(_, R)|Dates], FDates) :-
 		\+ betweenTime(R, CT),
 		makeDateInfo(CT, Dates, FDates).
 
@@ -231,21 +230,6 @@ writeResultList([H|T]) :-
     write(H),
     write('\n'),
     writeResultList(T).
-
-
-%dummy data
-testDateConvert(ConvertedDate).
-
-due(test1, date(1,3,1997), am(11, 30)).
-due(test2, date(1,3,1996), am(11, 30)).
-due(test3, date(1,3,1997), pm(11, 30)).
-
-duration(test, 1).
-duration(test, 2).
-duration(test, 4).
-duration(test, 2).
-duration(test, 3).
-duration(test, 6).
 
 
 % executeChosenMethod('4') :-
