@@ -1,4 +1,5 @@
 :- include('data.pl').
+:- include('slots.pl').
 :- use_module(set).
 :- dynamic slot/2, assigned/2.
 
@@ -37,6 +38,7 @@ assign_slots([H_Task|T_task], [assigned(H_Task,slot(D,R))|T_Assigned], New_Set) 
     slot(D,R),
     before_due(H_Task, slot(D,R)),
     not_member(slot(D,R), Set),
+    break_check(slot(D,R), Set),
     set_insert(slot(D,R), Set, New_Set).
 
 % before_due is true if Date and End are before Task's due date
@@ -44,7 +46,10 @@ before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
     (Date == Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
-
+break_check(Slot, Set) :-
+    neighbors(Slot, Set, N),
+    max_time(Max),
+    Max >= N + 1.
 
 % prereq_satisfied_wrapper is true if every assigned(task, slot) with a prereq has no slot with that prereq occuring after it
 prereq_satisfied_wrapper(X) :- prereq_satisfied(X, X).
@@ -105,46 +110,11 @@ contains_break([assigned(_,slot(DateA,range(_,EndA))),
                     (DateA \= DateB ; EndA \= StartB) ;
                     contains_break([assigned(B,slot(DateB,range(StartB,EndB)))|T]).
 
+% helper functions
 
-
-createSlotsWrapper :-
-    retractall(slot(_,_)),
-    findall(available(X, Y), available(X, Y), Availables),
-    createSlots(Availables, Slots),
-    filterEvents(Slots, FSlots),
-    maplist(assert, FSlots).
-
-createSlots([],[]).
-createSlots([available(Date, Range)|Availables], AllSlots) :-
-    splitTime(Date, Range, SlotsA),
-    createSlots(Availables, Slots),
-    append(SlotsA, Slots, AllSlots).
-
-% not fully working yet, will finish tonight
-splitTime(Date, range(S, E), Slots) :-
-    roundUp30(S, Start),
-    roundDown30(E, End),
-    splitTimeH(Date, range(Start,End), Slots).
-
-splitTimeH(Date, range(Start, End), [slot(Date, range(Start, E15))|Slots]) :-
-		timeAfterX(Start, E15, 30), beforeTime(E15, End),
-		splitTimeH(Date, range(E15, End), Slots).
-splitTimeH(Date, range(Start, E15), [slot(Date, range(Start, E15))]) :-
-		timeAfterX(Start, E15, 30).
-
-%filters out slots that are during events
-filterEvents([],[]).
-filterEvents([slot(Date, range(S, E))|Slots], [slot(Date, range(S, E))|FSlots]) :-
-		\+ duringEvent(Date, S,_),
-		filterEvents(Slots, FSlots).
-filterEvents([slot(Date, range(S,_))|Slots], FSlots) :-
-		duringEvent(Date, S,_),
-        %assert(assigned(Name, slot(Date, range(S, E)))),
-		filterEvents(Slots, FSlots).
-
-duringEvent(Date, Time, Name) :-
-		event(Name, Date, Range),
-		betweenTimeNE(Range, Time).
+% take(List1, N, List2) is true when List2 is the first N elements of List1
+take(_,0,[]).
+take([H|T1], N, [H|T2]) :- N > 0, N_New is N-1, take(T1, N_New, T2).
 
 % replicate(Elem, Int, List) is true if List is a list of Int Elems.
 replicate(_,0,[]).
@@ -152,14 +122,3 @@ replicate(Elem, Iter, [Elem|T]) :-
     Iter \= 0,
     NewIter is Iter-1,
     replicate(Elem, NewIter, T).
-
-% before_slot(Slot1, Slot2) is true if slot1 ends before or when slot2 starts
-before_slot(slot(D1,_), slot(D2,_)) :-
-    beforeDate(D1, D2).
-before_slot(slot(D, range(_,Time)), slot(D, range(Time,_))).
-before_slot(slot(D, range(_,End)), slot(D, range(Start,_))) :-
-    beforeTime(End, Start).
-
-% take(List1, N, List2) is true when List2 is the first N elements of List1
-take(_,0,[]).
-take([H|T1], N, [H|T2]) :- N > 0, N_New is N-1, take(T1, N_New, T2).

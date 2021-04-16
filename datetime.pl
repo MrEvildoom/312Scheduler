@@ -1,5 +1,7 @@
 %% File for all date time operations %%
 
+:- dynamic slot/2, event/3.
+
 % takes in a single quote date item and returns the datre in format date(MM, DD, YYYY)
 convertDate(Date, date(MM, DD, YYYY)) :-
     term_to_atom(MM/DD/YYYY, Date).
