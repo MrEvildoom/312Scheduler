@@ -13,7 +13,7 @@ mainf :-
     once(assertSchedule),
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
     writeToCSV,
-    write('Schedule written to output.csv!\n'), flush_output(current_output).
+    write('Schedule written to your specified file!\n'), flush_output(current_output).
 
 getMaxTime :-
     write('Do you want to schedule breaks after 2 hours? (or no breaks) (y/n)\n'), flush_output(current_output),
