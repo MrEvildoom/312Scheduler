@@ -48,17 +48,23 @@ before_slot(slot(D, range(_,Time)), slot(D, range(Time,_))).
 before_slot(slot(D, range(_,End)), slot(D, range(Start,_))) :-
     beforeTime(End, Start).
 
-% slotRightAfter(A, B) is true if B is right after A
-% if B is unknow, it can be calculated
-slot_next(slot(D, range(A, B)), slot(D, range(B, C))) :-
-    nonvar(A), var(C),
-    slot(D, range(A,B)),
+% slotRightAfter(A, B) is true if B is right after A.
+% A and B do not necessarily have to be in the knowledge base
+next(slot(D, range(A, B)), slot(D, range(B, C))) :-
+    nonvar(D), nonvar(A), nonvar(B), var(C),
     timeAfter30(B, C),
-    slot(D, range(B,C)).
+    no_midnight(B, C),
+    slot(D, range(B, C)).
 
-% if A is unknown we have to check the KB.
-slot_next(slot(D, range(A, B)), slot(D, range(B, C))) :-
-    var(A), nonvar(C),
-    slot(D, range(B,C)),
-    slot(D, range(A,B)),
-    timeAfter30(A, B).
+next(slot(D, range(A, B)), slot(D, range(B, C))) :-
+    nonvar(D), var(A), nonvar(B), nonvar(C),
+    timeAfter30(A, B),
+    no_midnight(A, B),
+    slot(D, range(A, B)).
+
+% % if A is unknown we have to check the KB.
+% next(slot(D, range(A, B)), slot(D, range(B, C))) :-
+%     var(A), nonvar(C),
+%     slot(D, range(B,C)),
+%     slot(D, range(A,B)),
+%     timeAfter30(A, B).

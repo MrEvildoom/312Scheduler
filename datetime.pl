@@ -3,7 +3,9 @@
     [convertDate/2, convertTime/2, timeConvert/2,
     beforeTime/2, beforeDate/2,
     lengthT/2,
-    timeAfter15/2, timeAfter30/2, timeAfterX/3,
+    timeAfterX/3, timeAfter15/2, timeAfter30/2,
+    no_midnight/2,
+    nextDay/2,
     roundDown30/2, roundUp30/2,
     betweenTime/2, betweenTimeNE/2]).
 :- dynamic slot/2, event/3.
@@ -96,40 +98,15 @@ timeAfter15(T1, T2) :-
 timeAfter30(T1, T2) :-
     timeAfterX(T1, T2, 30).
 
-% % returns the time of the given time X minutes after.
-% timeAfterX(am(H, M1), am(H, M2), X) :-
-% 		M1 < X,
-% 		M2 is M1 + X.
-% timeAfterX(pm(H, M1), pm(H, M2), X) :-
-% 		M1 < X,
-% 		M2 is M1 + X.
-% timeAfterX(am(H1, M1), am(H2, M2), X) :-
-% 		H1 < 11, M1 > X-1,
-% 		H2 is H1 + 1,
-% 		M2 is M1 - X.
-% timeAfterX(pm(H1, M1), pm(H2, M2), X) :-
-% 		H1 < 11, M1 > X-1,
-% 		H2 is H1 + 1,
-% 		M2 is M1 - X.
-% timeAfterX(am(12, M1), am(1, M2), X) :-
-% 		M1 > X-1,
-% 		M2 is M1 - X.
-% timeAfterX(pm(12, M1), pm(1, M2), X) :-
-% 		M1 > X-1,
-% 		M2 is M1 - X.
-% timeAfterX(am(11, M1), pm(12, M2), X) :-
-% 		M1 > X-1,
-% 		M2 is M1 - X.
-
 timeAfterX(A,B,X) :-
-    nonvar(A), nonvar(B), nonvar(X),
+    nonvar(A), nonvar(B), nonvar(X), X >= 0, X < 1440,
     timeAfterXForward(A,B1,X),
     B = B1.
 timeAfterX(A,B,X) :-
-    nonvar(A), var(B), nonvar(X),
+    nonvar(A), var(B), nonvar(X), X >= 0, X < 1440,
     timeAfterXForward(A,B,X).
 timeAfterX(A,B,X) :-
-    var(A), nonvar(B), nonvar(X),
+    var(A), nonvar(B), nonvar(X), X >= 0, X < 1440,
     timeAfterXBackward(A,B,X).
 
 %% Forward %%
@@ -218,6 +195,12 @@ timeAfterXBackward(pm(A,B), pm(C,D), X) :-
 timeAfterXBackward(am(A,B), pm(C,D), X) :-
     var(A), var(B), nonvar(C), nonvar(D), nonvar(X),
     timeAfterXBackward(pm(A,B), am(C,D),X).
+
+% no_midnight(T1,T2) is true if T2 is after T1 in the day (midnight is not between them)
+no_midnight(am(A,B), am(A, C)) :- C > B.
+no_midnight(am(A,_), am(B,_)) :- B > A, B \= 12.
+no_midnight(am(12,_),am(B,_)) :- B < 12.
+no_midnight(am(_,_), pm(_,_)).
 
 
 % gives the next day of the month
