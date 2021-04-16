@@ -11,10 +11,10 @@ schedule_list(Ordered_List) :-
     createSlotsWrapper,
     findall(X, task(X), Tasks),
     subdivide_tasks(Tasks, Block_List),
-    assign_slots_wrapper(Block_List, Scheduled_List),
+    assign_slots(Block_List, Scheduled_List, _),
     insert_sort(Scheduled_List, Ordered_List),
-    prereq_satisfied_wrapper(Ordered_List),
-    ensure_breaks(Ordered_List).
+    prereq_satisfied_wrapper(Ordered_List).
+    % ensure_breaks(Ordered_List).
 
 % findall(X, task(X), Tasks), assign_slots_wrapper(Tasks, X), insert_sort(X,Y).
 
@@ -26,12 +26,7 @@ subdivide_tasks([H|T], Result) :-
     subdivide_tasks(T, T_Blocks),
     append(H_Blocks, T_Blocks, Result).
 
-% assign_slots_wrapper(Tasks, Tasklist) is true if Tasklist is a list of assigned(task, slot),
-% with a task for every element in Tasks and no repeated slots
-% remove this since it's a 1-liner
-assign_slots_wrapper(Tasks, Tasklist) :-
-    assign_slots(Tasks, Tasklist, _).
-
+% assign_slots(Tasks, Tasklist, Set) is true if for each element Task of Tasks, there is a assigned(Task, slot(_,_)) in Tasklist.
 assign_slots([],[], empty).
 assign_slots([H_Task|T_task], [assigned(H_Task,slot(D,R))|T_Assigned], New_Set) :-
     assign_slots(T_task, T_Assigned, Set),
@@ -46,6 +41,8 @@ before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
     (Date == Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
+% break_check(Elem, Set) is true if inserting Elem into Set
+% would not cause Set to include more than the max allowable length on uninterrupted elements.
 break_check(Slot, Set) :-
     neighbors(Slot, Set, N),
     max_time(Max),

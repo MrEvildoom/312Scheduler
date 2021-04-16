@@ -54,6 +54,6 @@ l_neighbors(Elem, Set, Num) :-
 r_neighbors(Elem,_, 0) :-
     \+ next(Elem,_).
 
-next(slot(A,B), slot(B,C)) :- slotRightAfter(slot(A,B), slot(B,C)).
-next(A,B) :- not(var(A)), var(B), B is A + 1.
-next(A,B) :- var(A), not(var(B)), A is B - 1.
+next(slot(A,B), slot(B,C)) :- slot_next(slot(A,B), slot(B,C)).
+next(A,B) :- not(var(A)), number(A), var(B), B is A + 1.
+next(A,B) :- var(A), not(var(B)), number(B), A is B - 1.

@@ -48,6 +48,6 @@ before_slot(slot(D, range(_,End)), slot(D, range(Start,_))) :-
     beforeTime(End, Start).
 
 % slotRightAfter(A, B) is true if B is right after A
-slotRightAfter(slot(D, range(A, B)), slot(D, range(B, C))) :-
+slot_next(slot(D, range(A, B)), slot(D, range(B, C))) :-
     slot(D, range(A,B)),
     slot(D, range(B,C)).
