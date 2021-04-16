@@ -113,6 +113,11 @@ assertFacts([H|T]) :-
     assert(H),
     assertFacts(T).
 
+% helper function to read from terminal as term with no quotes
+read_term(T) :-
+    read_sq(A),
+    term_to_atom(T, A).
+
 % helper function to read from terminal as single quote atom
 read_sq(SQ) :-
     read_line(String),
@@ -131,4 +136,8 @@ readTop2(File, Row1, Row2) :-
     csv_read_file_row(File, Row2, [line(Num2)]),
     Num2 is Num + 1.
 
+concatAtomList([], '').
+concatAtomList([Item|Rest], NewResult) :-
+    concatAtomList(Rest, Result),
+    atom_concat(Item, Result, NewResult).
 
