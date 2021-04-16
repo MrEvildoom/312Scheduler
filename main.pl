@@ -19,11 +19,11 @@ getMaxTime :-
     write('Do you want to schedule breaks after 2 hours? (or no breaks) (y/n)\n'), flush_output(current_output),
     read_sq(YorN),
     (isYes(YorN) -> 
-    (changeMaxTime);
-    (true)).
+    (changeMaxTime(4));
+    (changeMaxTime(0))).
 
-changeMaxTime :-
-    retractall(max_time(_)), assert(max_time(4)).
+changeMaxTime(N) :-
+    retractall(max_time(_)), assert(max_time(N)).
 
 % recovers the load from a catch and redoes load until it works
 recoverLoad :-

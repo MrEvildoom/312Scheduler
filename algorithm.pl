@@ -27,7 +27,7 @@ enough_time(Tasks) :-
     (X \= 0 -> Task_Time_Adj is 1 / X ; Task_Time_Adj is 0),
     sum_time(Tasks, Task_Time),
     Real_Task_Time is Task_Time + (Task_Time * Task_Time_Adj),
-    findall(slot(X,Y), slot(X,Y), Slots),
+    findall(slot(D,R), slot(D,R), Slots),
     length(Slots, L),
     Time_available is L / 2,
     Real_Task_Time =< Time_available.
@@ -61,7 +61,9 @@ before_due(Task, slot(Date, range(_,Time))) :-
     due(Task, Due_date, Due_time),
     (Date == Due_date -> beforeTime(Time, Due_time) ; beforeDate(Date, Due_date)).
 
-max_time(0). % the maximum amount of slots that can scheduled consecutively
+max_time(0).
+% the maximum amount of slots that can scheduled consecutively
+% 0 means no limit
 
 % break_check(Elem, Set) is true if inserting Elem into Set
 % would not cause Set to include more than the max allowable length on uninterrupted elements.
