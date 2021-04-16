@@ -44,6 +44,7 @@ max_time(4). % the maximum amount of slots that can scheduled consecutively
 
 % break_check(Elem, Set) is true if inserting Elem into Set
 % would not cause Set to include more than the max allowable length on uninterrupted elements.
+break_check(_,_) :- max_time(0).
 break_check(Slot, Set) :-
     neighbors(Slot, Set, N),
     max_time(Max),
