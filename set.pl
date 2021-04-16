@@ -1,4 +1,5 @@
-:- module(set, [set_insert/3, member/2, not_member/2]).
+:- module(set, [set_insert/3, member/2, not_member/2, neighbors/3]).
+:- include('slots.pl').
 
 % set(Node, LT, RT) where LT and RT are either another set or empty.
 % set_insert(Elem, Set, Newset) is true when Newset is the union of Set and {Elem}
@@ -28,3 +29,31 @@ not_member(Elem, set(Node, LT,_)) :-
 not_member(Elem, set(Node,_,RT)) :-
     before_slot(Node, Elem),
     not_member(Elem, RT).
+
+% calculates how many elements in the set are next to Elem or next to an element next to Elem.
+neighbors(Elem, Set, Num) :-
+    l_neighbors(Elem, Set, L),
+    r_neighbors(Elem, Set, R),
+    Num is L + R.
+
+l_neighbors(Elem, Set, Num) :-
+    next(N_Elem, Elem),
+   (member(N_Elem, Set) ->
+       (l_neighbors(N_Elem, Set, N_Num),
+        Num is 1 + N_Num) ;
+        Num is 0).
+l_neighbors(Elem,_, 0) :-
+    \+ next(_,Elem).
+
+l_neighbors(Elem, Set, Num) :-
+    next(Elem, N_Elem),
+   (member(N_Elem, Set) ->
+       (r_neighbors(N_Elem, Set, N_Num),
+        Num is 1 + N_Num) ;
+        Num is 0).
+r_neighbors(Elem,_, 0) :-
+    \+ next(Elem,_).
+
+next(slot(A,B), slot(B,C)) :- slotRightAfter(slot(A,B), slot(B,C)).
+next(A,B) :- not(var(A)), var(B), B is A + 1.
+next(A,B) :- var(A), not(var(B)), A is B - 1.
