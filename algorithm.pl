@@ -12,7 +12,7 @@ assertSchedule :-
 
 %creates a list of scheduled items
 schedule_list(Scheduled_List) :-
-    createSlotsWrapper,
+    once(createSlotsWrapper),
     findall(X, task(X), Tasks),
     enough_time(Tasks),
     subdivide_tasks(Tasks, Block_List),
@@ -24,8 +24,8 @@ enough_time(Tasks) :-
     sum_time(Tasks, Task_Time),
     findall(slot(X,Y), slot(X,Y), Slots),
     length(Slots, L),
-    time_available is L / 2,
-    Task_Time =< time_available.
+    Time_available is L / 2,
+    Task_Time =< Time_available.
 
 sum_time([],0).
 sum_time([H|T], N1) :-
