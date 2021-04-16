@@ -96,30 +96,102 @@ timeAfter15(T1, T2) :-
 timeAfter30(T1, T2) :-
     timeAfterX(T1, T2, 30).
 
-% returns the time of the given time X minutes after.
-timeAfterX(am(H, M1), am(H, M2), X) :-
-		M1 < X,
-		M2 is M1 + X.
-timeAfterX(pm(H, M1), pm(H, M2), X) :-
-		M1 < X,
-		M2 is M1 + X.
-timeAfterX(am(H1, M1), am(H2, M2), X) :-
-		H1 < 11, M1 > X-1,
-		H2 is H1 + 1,
-		M2 is M1 - X.
-timeAfterX(pm(H1, M1), pm(H2, M2), X) :-
-		H1 < 11, M1 > X-1,
-		H2 is H1 + 1,
-		M2 is M1 - X.
-timeAfterX(am(12, M1), am(1, M2), X) :-
-		M1 > X-1,
-		M2 is M1 - X.
-timeAfterX(pm(12, M1), pm(1, M2), X) :-
-		M1 > X-1,
-		M2 is M1 - X.
-timeAfterX(am(11, M1), pm(12, M2), X) :-
-		M1 > X-1,
-		M2 is M1 - X.
+% % returns the time of the given time X minutes after.
+% timeAfterX(am(H, M1), am(H, M2), X) :-
+% 		M1 < X,
+% 		M2 is M1 + X.
+% timeAfterX(pm(H, M1), pm(H, M2), X) :-
+% 		M1 < X,
+% 		M2 is M1 + X.
+% timeAfterX(am(H1, M1), am(H2, M2), X) :-
+% 		H1 < 11, M1 > X-1,
+% 		H2 is H1 + 1,
+% 		M2 is M1 - X.
+% timeAfterX(pm(H1, M1), pm(H2, M2), X) :-
+% 		H1 < 11, M1 > X-1,
+% 		H2 is H1 + 1,
+% 		M2 is M1 - X.
+% timeAfterX(am(12, M1), am(1, M2), X) :-
+% 		M1 > X-1,
+% 		M2 is M1 - X.
+% timeAfterX(pm(12, M1), pm(1, M2), X) :-
+% 		M1 > X-1,
+% 		M2 is M1 - X.
+% timeAfterX(am(11, M1), pm(12, M2), X) :-
+% 		M1 > X-1,
+% 		M2 is M1 - X.
+
+timeAfterX(A,B,X) :-
+    nonvar(A), nonvar(B), nonvar(X),
+    timeAfterXForward(A,B1,X),
+    B = B1.
+timeAfterX(A,B,X) :-
+    nonvar(A), var(B), nonvar(X),
+    timeAfterXForward(A,B,X).
+timeAfterX(A,B,X) :-
+    var(A), nonvar(B), nonvar(X),
+    timeAfterXBackward(A,B,X).
+
+% adding more than 60 minutes
+timeAfterXForward(A,C,X) :-
+    nonvar(A), var(C), nonvar(X), X>60,
+    X1 is X - 60,
+    timeAfterXForward(A,B,60),
+    timeAfterXForward(B,C,X1).
+% adding minutes without going over the hour
+timeAfterXForward(am(H, M1), am(H, M2), X) :-
+    nonvar(H), nonvar(M1), nonvar(X), X=<60,
+    M2 is M1 + X,
+    M2 < 60.
+% adding minutes going to or over the hour
+% 1 am to 10 am
+timeAfterXForward(am(H1, M1), am(H2, M2), X) :-
+    nonvar(H1), nonvar(M1), nonvar(X), X=<60,
+    M3 is M1 + X,
+    M3 >= 60,
+    M2 is M3 - 60,
+    H1 < 11,
+    H2 is H1 + 1.
+% adding minutes going to or over the hour, 11 am to 12 pm
+timeAfterXForward(am(11, M1), pm(12, M2), X) :-
+    nonvar(M1), nonvar(X), X=<60,
+    M3 is M1 + X,
+    M3 >= 60,
+    M2 is M3 - 60.
+% adding minutes going to or over the hour, 12 am to 1 am
+timeAfterXForward(am(12, M1), am(1, M2), X) :-
+    nonvar(M1), nonvar(X), X=<60,
+    M3 is M1 + X,
+    M3 >= 60,
+    M2 is M3 - 60.
+
+% adding minutes without going over the hour
+timeAfterXForward(pm(H, M1), pm(H, M2), X) :-
+    nonvar(H), nonvar(M1), nonvar(X), X=<60,
+    M2 is M1 + X,
+    M2 < 60.
+% adding minutes going to or over the hour
+% 1 pm to 10 pm
+timeAfterXForward(pm(H1, M1), pm(H2, M2), X) :-
+    nonvar(H1), nonvar(M1), nonvar(X), X=<60,
+    M3 is M1 + X,
+    M3 >= 60,
+    M2 is M3 - 60,
+    H1 < 11,
+    H2 is H1 + 1.
+% adding mipnutes going to or over the hour, 11 pm to 12 am
+timeAfterXForward(pm(11, M1), am(12, M2), X) :-
+    nonvar(M1), nonvar(X), X=<60,
+    M3 is M1 + X,
+    M3 >= 60,
+    M2 is M3 - 60.
+% adding minutes going to or over the hour, 12 am to 1 am
+timeAfterXForward(pm(12, M1), pm(1, M2), X) :-
+    nonvar(M1), nonvar(X), X=<60,
+    M3 is M1 + X,
+    M3 >= 60,
+    M2 is M3 - 60.
+
 
 % gives the next day of the month
 nextDay(date(M1,D1,Y), date(M2,1,Y)) :-
