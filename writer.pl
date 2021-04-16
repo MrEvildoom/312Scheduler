@@ -150,8 +150,8 @@ createTaskList(Time, Date, [TName|Tasks]) :-
 
 %writes results to CSV file
 writeToCSV :-
-	createCellsWrapper,
-	createAllRows(Rows),
+	once(createCellsWrapper),
+	once(createAllRows(Rows)),
 	csv_write_file("output.csv", Rows).
 
 %map_item(P, row(Name, Date, range(S, E))) :-
