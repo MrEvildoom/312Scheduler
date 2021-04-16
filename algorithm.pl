@@ -3,6 +3,8 @@
 :- dynamic slot/2, assigned/2.
 
 assertSchedule :-
+        %retractall(assigned(_,_)),
+        findall(assigned(X,Y), assigned(X,Y), []),
 		schedule_list(SL),
         assertFacts(SL).
 

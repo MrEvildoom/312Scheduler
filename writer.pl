@@ -24,7 +24,6 @@ createCells(Date, AllCells) :-
 createCellsHelper(Time, Date, [cell(TName, Date, range(Time, End))|Cells]) :-
 	beforeTime(Time, pm(11,30)),
 	assigned(TName, slot(Date, range(Time, End))), timeAfter30(Time, End),
-	%assert(cell(TName, Date, range(Time, End))),
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
@@ -34,7 +33,6 @@ createCellsHelper(Time, Date, [cell('', Date, range(Time, End))|Cells]) :-
 	slot(Date, range(Time, End)),
 	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
 	\+ duringEvent(Date, Time,_),
-	%assert(cell('', Date, range(Time, End))),
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
@@ -45,7 +43,6 @@ createCellsHelper(Time, Date, [cell('X', Date, range(Time, End))|Cells]) :-
 	\+ assigned(_, slot(Date, range(Time, End))), timeAfter30(Time, End),
 	% above is probably unnecessary, keeping it in to be safe 
 	\+ duringEvent(Date, Time,_),
-	%assert(cell('', Date, range(Time, End))),
 	timeAfter30(Time, T30),
 	createCellsHelper(T30, Date, Cells).
 
@@ -61,13 +58,11 @@ createCellsHelper(Time, Date, [cell(EName, Date, range(Time, End))|Cells]) :-
 % create 11:30 - 12:00 cell if a task has been scheduled
 createCellsHelper(pm(11,30), Date, [cell(TName, Date, range(pm(11,30), End))]) :-
 	assigned(TName, slot(Date, range(pm(11,30), End))).
-	%assert(cell(TName, Date, range(pm(11,30), End))).
 
 % create 11:30 - 12:00 cell if no task scheduled
 createCellsHelper(pm(11,30), Date, [cell('', Date, range(pm(11,30), End))]) :-
 	\+ assigned(_, slot(Date, range(pm(11,30), End))),
 	\+ duringEvent(Date, pm(11,30),_).
-	%assert(cell('', Date, range(pm(11,30), End))).
 
 % create 11:30 - 12:00 cell if event scheduled
 createCellsHelper(pm(11,30), Date, [cell(EName, Date, range(pm(11,30), End))]) :-

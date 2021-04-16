@@ -1,12 +1,14 @@
 :- include('writer.pl').
+:- discontiguous executeChosenMethod/1.
 
-mainf :-
+mainf :- 
+    retractall(assigned(_,_)),
     write('Please make sure you have uploaded a valid profile, tasks file, and busy times file! \n Press Enter when ready.\n'), flush_output(current_output),
     read_sq(Ready1),
     catch(load, Err, recoverLoad),
     askForInfo,
     write('Creating a schedule for you...\n'), flush_output(current_output),
-    assertSchedule,
+    once(assertSchedule),
     write('Schedule created, writing schedule to CSV...\n'), flush_output(current_output),
     writeToCSV,
     write('Schedule written to output.csv!\n'), flush_output(current_output).
